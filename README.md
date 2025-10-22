@@ -17,11 +17,12 @@
 - **Active Learning** - Human feedback continuously improves model accuracy
 - **Hybrid Intelligence** - Combines ML predictions with configurable keyword rules
 
-### 📧 **Smart Email Management**
+### **📧 Smart Email Management**
 - **Secure OAuth2 Authentication** - Local token caching with Gmail API
-- **Automated Email Sorting** - Route emails to appropriate labels automatically
+- **Intelligent Email Classification** - Classify emails into categories for analysis and review
 - **Interactive Training** - Review and correct classifications to improve model
 - **Batch Processing** - Handle large volumes of emails efficiently
+- **Non-Destructive Analysis** - Classify emails without moving or modifying them in Gmail
 
 ### 🛡️ **Production Ready**
 - **Comprehensive Error Handling** - Graceful failure recovery and logging
@@ -80,9 +81,24 @@ python -c "from gmail_client import list_messages; from data_store import upsert
 # 2. Train ML model (after reviewing some emails)
 python -c "from trainer import train_from_feedback; print('Training requires reviewed emails - use review workflow first')"
 
-# 3. Generate predictions
-python -c "from sorter import propose; acts = propose(limit=10); print(f'Generated {len(acts)} action proposals')"
+# 3. Generate predictions and classify emails (without moving them)
+python process_real_emails.py
 ```
+
+## 📧 Email Processing Modes
+
+### **🔍 Analysis Mode (process_real_emails.py)**
+- **Classifies emails** using your trained ML model
+- **Stores classifications** in local database for review
+- **Does NOT move or modify** emails in Gmail
+- **Provides web interface** for reviewing classifications
+- **Safe for testing** - no permanent changes to your Gmail
+
+### **⚡ Action Mode (CLI workflow)**
+- **Applies classifications** by moving emails to labels/folders
+- **Modifies Gmail organization** based on predictions
+- **Requires explicit user confirmation** via CLI commands
+- **Production workflow** for automated email management
 
 ## 📚 Documentation
 
@@ -178,19 +194,23 @@ CREATE TABLE messages (
 ## 🎯 Use Cases
 
 ### **📧 Personal Email Management**
-- Automatically sort emails into Personal, Work, Receipts, etc.
+- Automatically classify emails into Personal, Work, Receipts, etc.
 - Intelligent spam filtering beyond Gmail's basic detection
 - Batch processing of email backlogs
+- **Analysis Mode**: Review classifications before making changes
+- **Action Mode**: Automatically organize emails into folders/labels
 
 ### **💼 Business Email Processing**
-- Organize emails by project, client, or priority
-- Route support tickets to appropriate teams
+- Classify emails by project, client, or priority
+- Route support tickets to appropriate teams (with action mode)
 - Compliance and audit trail maintenance
+- **Safe Testing**: Use analysis mode to validate classifications first
 
 ### **🔄 Workflow Automation**
 - Integration with other productivity tools
 - Scheduled email processing via cron jobs
 - Custom classification rules for specific domains
+- **Two-Stage Process**: Analyze first, then apply changes
 
 ## 🧪 Testing & Validation
 
@@ -389,9 +409,12 @@ python cli_fixed.py train
 # 4. See predictions for unprocessed emails
 python cli_fixed.py predict --limit 50
 
-# 5. Apply actions (DRY RUN first!)
+# 5. Apply actions (DRY RUN first!) - This actually moves emails
 python cli_fixed.py apply --dry-run
 python cli_fixed.py apply --no-dry-run  # Execute actions
+
+# Alternative: Classify emails without moving them
+python process_real_emails.py  # Analysis only - no Gmail changes
 ```
 
 ## 🧠 How It Works
@@ -485,13 +508,35 @@ RULES_INCLUDE = {
 - **Debug Mode**: Detailed operation logging for troubleshooting
 
 ## 🎯 Use Cases
-- **📧 Personal Email Management**: Automatically sort and filter personal emails
-- **💼 Business Email Processing**: Organize work emails by project, priority, or client
+- **📧 Personal Email Management**: Automatically classify and optionally sort personal emails
+- **💼 Business Email Processing**: Analyze and organize work emails by project, priority, or client
 - **🛡️ Advanced Spam Filtering**: More accurate than basic filters with learning capability
 - **📊 Email Analytics**: Understand email patterns and classification performance
 - **🔄 Workflow Automation**: Integrate with other tools via CLI interface
+- **🔍 Safe Analysis**: Review classifications before applying changes to Gmail
 
 ## ⚠️ Important Notes
+
+### **📧 Email Processing Modes**
+
+#### **🔍 Analysis Mode (`process_real_emails.py`)**
+- **What it does**: Fetches emails from Gmail and classifies them using your trained model
+- **Storage**: Saves classifications in local database for review
+- **Gmail changes**: **NONE** - Does not move, label, or modify emails in Gmail
+- **Safety**: Completely safe - no permanent changes to your email
+- **Use case**: Testing model accuracy, reviewing classifications before applying
+- **Output**: Web interface at http://localhost:8000/docs to review results
+
+#### **⚡ Action Mode (CLI `apply` command)**
+- **What it does**: Actually moves emails to appropriate folders/labels in Gmail
+- **Gmail changes**: **YES** - Applies labels and removes from INBOX
+- **Safety**: Use `--dry-run` first to preview changes
+- **Use case**: Production email organization after validating classifications
+- **Output**: Emails are moved to target labels in Gmail
+
+**Recommendation**: Always use Analysis Mode first to validate your model's accuracy before using Action Mode to make permanent changes.
+
+### **🧠 Model Training Requirements**
 - **🧠 Model Training**: Requires labeled data - start with `review` command for best results
 - **🔒 Privacy**: All processing happens locally - emails are not sent to external services
 - **⚡ Performance**: TF-IDF + small neural network = fast training and inference
