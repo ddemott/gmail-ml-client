@@ -148,6 +148,14 @@ data/
 logs/
 temp/
 
+# Model artifacts (large files, can be regenerated)
+model_artifacts/
+*.joblib
+*.keras
+*.h5
+*.pkl
+*.pickle
+
 # OS specific
 .DS_Store
 Thumbs.db

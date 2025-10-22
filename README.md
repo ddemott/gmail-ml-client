@@ -191,6 +191,59 @@ CREATE TABLE messages (
 );
 ```
 
+## 🛠️ Available Scripts & Tools
+
+### **📧 Email Processing Scripts**
+
+#### **🔍 Analysis & Classification**
+- **`process_real_emails.py`** - Classify emails without moving them (Analysis Mode)
+- **`show_classification_summary.py`** - Display classification statistics and results
+- **`interactive_email_review.py`** - Review and recategorize emails with full content
+- **`show_real_messages.py`** - Display actual processed email content
+- **`quick_misclassification_check.py`** - Quick check for classification errors
+
+#### **📥 Email Syncing & Management**
+- **`simple_sync.py`** - Simple email sync for manual review/labeling
+- **`sync_gmail.py`** - Advanced Gmail synchronization
+- **`quick_sync.py`** - Fast sync for recent emails
+- **`check_folders.py`** - Check Gmail folder organization status
+
+#### **🧠 Training & Model Management**
+- **`simple_train.py`** - Simple training script for small datasets
+- **`train_from_folders.py`** - Train model using Gmail folder labels
+- **`train_from_labels.py`** - Train model using specific labels
+- **`retrain_all_folders.py`** - Comprehensive retraining script
+- **`maximum_data_training.py`** - Train with maximum available data
+
+#### **🔧 Utility & Maintenance**
+- **`show_labels.py`** - Display available Gmail labels
+- **`show_messages.py`** - Show stored message data
+- **`debug_labels.py`** - Debug label issues
+- **`quick_fix.py`** - Quick fixes for common issues
+- **`add_sample_data.py`** - Add sample data for testing
+
+#### **🧪 Analysis & Debugging**
+- **`analyze_classification_errors.py`** - Detailed error analysis
+- **`analyze_misclassifications.py`** - Find and analyze misclassified emails
+- **`check_real_misclassifications.py`** - Validate actual misclassifications
+- **`fix_identified_errors.py`** - Fix known classification errors
+
+#### **🗑️ Data Cleaning**
+- **`clean_spam_training.py`** - Clean spam training data
+- **`remove_trash_training.py`** - Remove trash emails from training
+- **`check_spam_folder.py`** - Check spam folder organization
+
+#### **📊 Advanced Processing**
+- **`high_volume_processing.py`** - Handle large email volumes
+- **`fine_tune_spam.py`** - Fine-tune spam detection
+- **`manual_correction_tool.py`** - Manual correction interface
+
+### **📚 Documentation Files**
+- **`organization_guide.md`** - Complete guide for organizing your Gmail training data
+- **`API_DOCS.md`** - REST API documentation  
+- **`CLI_HELP.md`** - Complete CLI command reference
+- **`ARCHITECTURE.md`** - Technical architecture details
+
 ## 🎯 Use Cases
 
 ### **📧 Personal Email Management**
@@ -514,6 +567,61 @@ RULES_INCLUDE = {
 - **📊 Email Analytics**: Understand email patterns and classification performance
 - **🔄 Workflow Automation**: Integrate with other tools via CLI interface
 - **🔍 Safe Analysis**: Review classifications before applying changes to Gmail
+
+## 🚀 Recommended Workflows
+
+### **🔍 Analysis Workflow (Safe - No Gmail Changes)**
+```bash
+# 1. Sync recent emails for analysis
+python simple_sync.py
+
+# 2. Train model with existing data
+python simple_train.py
+
+# 3. Classify emails (no changes to Gmail)
+python process_real_emails.py
+
+# 4. Review classification results
+python show_classification_summary.py
+
+# 5. Interactive review and corrections
+python interactive_email_review.py
+```
+
+### **⚡ Production Workflow (Makes Gmail Changes)**
+```bash
+# 1. Check your Gmail folder organization
+python check_folders.py
+
+# 2. Organize emails according to the guide
+# See organization_guide.md for detailed instructions
+
+# 3. Train model from your organized folders
+python train_from_folders.py
+
+# 4. Use CLI for production email management
+python cli_fixed.py sync
+python cli_fixed.py apply --dry-run
+python cli_fixed.py apply --no-dry-run  # Execute actions
+```
+
+### **🧪 Development & Testing Workflow**
+```bash
+# 1. Analyze current classifications for errors
+python analyze_classification_errors.py
+
+# 2. Check for misclassifications
+python check_real_misclassifications.py
+
+# 3. Use interactive tool to fix errors
+python interactive_email_review.py
+
+# 4. Retrain model with corrections
+python simple_train.py
+
+# 5. Test with new emails
+python process_real_emails.py
+```
 
 ## ⚠️ Important Notes
 
