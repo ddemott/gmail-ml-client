@@ -10,7 +10,6 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from gmail_client import get_labels, get_message, list_messages
-from preprocessor import extract_text
 
 
 def main():
@@ -62,7 +61,7 @@ def main():
                 all_spam_messages.extend(messages[:100])  # Take up to 100 for analysis
 
                 # Analyze a few spam messages to see content
-                print(f"   🔍 Analyzing sample spam content...")
+                print("   🔍 Analyzing sample spam content...")
                 sample_messages = messages[:3]  # Look at first 3
 
                 for i, msg in enumerate(sample_messages, 1):
@@ -82,23 +81,23 @@ def main():
                     except Exception as e:
                         print(f"      {i}. Error reading message: {e}")
 
-        print(f"\n📈 SPAM ANALYSIS SUMMARY:")
+        print("\n📈 SPAM ANALYSIS SUMMARY:")
         print("=" * 40)
         print(f"Total SPAM messages found: {total_spam_count}")
         print(f"Available for training: {min(total_spam_count, 500)}")
 
         if total_spam_count > 0:
-            print(f"\n💡 RECOMMENDATIONS:")
+            print("\n💡 RECOMMENDATIONS:")
             print("• You have enough spam data for good training!")
             print("• Gmail automatically moves spam to SPAM folder")
             print("• We can train with up to 500 spam messages")
             print("• This will help the model learn spam patterns")
 
-            print(f"\n🚀 READY TO TRAIN:")
+            print("\n🚀 READY TO TRAIN:")
             print("• Run: python train_spam_data.py")
             print("• This will add spam training to your existing model")
         else:
-            print(f"\n⚠️  LIMITED SPAM DATA:")
+            print("\n⚠️  LIMITED SPAM DATA:")
             print("• Consider manually marking some emails as spam")
             print("• Gmail will learn and auto-detect more spam over time")
             print("• You can still train with whatever spam data exists")

@@ -3,23 +3,20 @@ Authentication and credential management layer.
 Handles OAuth flows, token refresh, and secure credential storage.
 """
 
-import base64
 import hashlib
 import json
 import os
-import pickle
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 
 from .logger import logger
 
@@ -39,12 +36,12 @@ class AuthConfig:
     provider: AuthProvider
     credentials_file: str
     token_file: str
-    scopes: List[str]
-    redirect_uri: Optional[str] = None
-    client_id: Optional[str] = None
-    client_secret: Optional[str] = None
+    scopes: list[str]
+    redirect_uri: str | None = None
+    client_id: str | None = None
+    client_secret: str | None = None
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate authentication configuration."""
         errors = []
         if not self.credentials_file:
@@ -61,9 +58,9 @@ class TokenInfo:
     """Information about authentication tokens."""
 
     access_token: str
-    refresh_token: Optional[str]
-    expires_at: Optional[datetime]
-    scopes: List[str]
+    refresh_token: str | None
+    expires_at: datetime | None
+    scopes: list[str]
     token_type: str = "Bearer"
 
     def is_expired(self) -> bool:
@@ -84,12 +81,12 @@ class CredentialStore(ABC):
     """Abstract base class for credential storage."""
 
     @abstractmethod
-    def store_credentials(self, key: str, credentials: Dict[str, Any]) -> None:
+    def store_credentials(self, key: str, credentials: dict[str, Any]) -> None:
         """Store credentials."""
         pass
 
     @abstractmethod
-    def load_credentials(self, key: str) -> Optional[Dict[str, Any]]:
+    def load_credentials(self, key: str) -> dict[str, Any] | None:
         """Load credentials."""
         pass
 
@@ -99,7 +96,7 @@ class CredentialStore(ABC):
         pass
 
     @abstractmethod
-    def list_keys(self) -> List[str]:
+    def list_keys(self) -> list[str]:
         """List all stored credential keys."""
         pass
 
@@ -132,13 +129,13 @@ class FileCredentialStore(CredentialStore):
         # This is a basic implementation - use proper encryption libraries in production
         key = os.environ.get("GMAIL_ML_CRYPT_KEY", "default_key_change_me").encode()
         key = (key * (len(data) // len(key) + 1))[: len(data)]
-        return bytes(a ^ b for a, b in zip(data, key))
+        return bytes(a ^ b for a, b in zip(data, key, strict=False))
 
     def _decrypt_data(self, data: bytes) -> bytes:
         """Simple XOR decryption."""
         return self._encrypt_data(data)  # XOR is symmetric
 
-    def store_credentials(self, key: str, credentials: Dict[str, Any]) -> None:
+    def store_credentials(self, key: str, credentials: dict[str, Any]) -> None:
         """Store credentials to encrypted file."""
         try:
             file_path = self._get_file_path(key)
@@ -157,7 +154,7 @@ class FileCredentialStore(CredentialStore):
             logger.error(f"Failed to store credentials for {key}: {e}")
             raise
 
-    def load_credentials(self, key: str) -> Optional[Dict[str, Any]]:
+    def load_credentials(self, key: str) -> dict[str, Any] | None:
         """Load credentials from encrypted file."""
         try:
             file_path = self._get_file_path(key)
@@ -186,7 +183,7 @@ class FileCredentialStore(CredentialStore):
         except Exception as e:
             logger.error(f"Failed to delete credentials for {key}: {e}")
 
-    def list_keys(self) -> List[str]:
+    def list_keys(self) -> list[str]:
         """List all stored credential keys."""
         # This is a limitation of the hashed approach - we can't reverse the hash
         # In a production system, you'd store a mapping file or use a different approach
@@ -196,11 +193,11 @@ class FileCredentialStore(CredentialStore):
 class AuthenticationManager:
     """Manages authentication flows and credential lifecycle."""
 
-    def __init__(self, config: AuthConfig, credential_store: Optional[CredentialStore] = None):
+    def __init__(self, config: AuthConfig, credential_store: CredentialStore | None = None):
         self.config = config
         self.credential_store = credential_store or FileCredentialStore()
-        self._current_credentials: Optional[Credentials] = None
-        self._service_cache: Dict[str, Any] = {}
+        self._current_credentials: Credentials | None = None
+        self._service_cache: dict[str, Any] = {}
 
     def authenticate(self, force_refresh: bool = False) -> Credentials:
         """Authenticate and return valid credentials."""
@@ -306,7 +303,7 @@ class AuthenticationManager:
         except Exception as e:
             logger.error(f"Failed to revoke credentials: {e}")
 
-    def get_token_info(self) -> Optional[TokenInfo]:
+    def get_token_info(self) -> TokenInfo | None:
         """Get information about current token."""
         if not self._current_credentials:
             return None
@@ -323,7 +320,7 @@ class AuthenticationManager:
         """Check if user is currently authenticated."""
         return self._current_credentials is not None and self._current_credentials.valid
 
-    def validate_scopes(self, required_scopes: List[str]) -> bool:
+    def validate_scopes(self, required_scopes: list[str]) -> bool:
         """Validate that current credentials have required scopes."""
         if not self._current_credentials or not self._current_credentials.scopes:
             return False
@@ -341,7 +338,7 @@ class AuthenticationFactory:
     def create_gmail_auth(
         credentials_file: str = "credentials.json",
         token_file: str = "token.json",
-        credential_store: Optional[CredentialStore] = None,
+        credential_store: CredentialStore | None = None,
     ) -> AuthenticationManager:
         """Create authentication manager for Gmail API."""
         config = AuthConfig(
@@ -362,8 +359,8 @@ class AuthenticationFactory:
         provider: AuthProvider,
         credentials_file: str,
         token_file: str,
-        scopes: List[str],
-        credential_store: Optional[CredentialStore] = None,
+        scopes: list[str],
+        credential_store: CredentialStore | None = None,
     ) -> AuthenticationManager:
         """Create custom authentication manager."""
         config = AuthConfig(
@@ -377,7 +374,7 @@ class AuthenticationFactory:
 
 
 # Global authentication manager instance
-_default_auth_manager: Optional[AuthenticationManager] = None
+_default_auth_manager: AuthenticationManager | None = None
 
 
 def get_auth_manager() -> AuthenticationManager:

@@ -1,5 +1,3 @@
-from typing import Any, Dict, List, Optional
-
 # Thresholds for decisions
 THRESHOLDS = {
     "spam": 0.85,  # probability to send to Trash

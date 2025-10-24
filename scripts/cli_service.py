@@ -3,13 +3,10 @@ Enhanced CLI that uses the service layer instead of direct module calls.
 Demonstrates proper separation of concerns.
 """
 
-from typing import Optional
-
 import typer
 from logger import logger
 from rich import box, print
 from rich.console import Console
-from rich.progress import track
 from rich.table import Table
 from services import (
     action_service,
@@ -59,7 +56,7 @@ def ensure_labels():
 
 @app.command()
 def sync(
-    query: Optional[str] = typer.Option(None, "--query", "-q", help="Gmail search query"),
+    query: str | None = typer.Option(None, "--query", "-q", help="Gmail search query"),
     limit: int = typer.Option(200, "--limit", "-l", help="Maximum messages to sync"),
 ):
     """Fetch messages into local store via service layer."""
@@ -70,7 +67,7 @@ def sync(
             result = sync_service.sync_messages(query=query, limit=limit)
 
         # Display results
-        print(f"[green]✓ Sync completed:[/green]")
+        print("[green]✓ Sync completed:[/green]")
         print(f"  • Total messages: {result.total_messages}")
         print(f"  • Processed: {result.processed_messages}")
         print(f"  • Failed: {result.failed_messages}")
@@ -99,7 +96,7 @@ def train(epochs: int = typer.Option(6, "--epochs", "-e", help="Number of traini
 
         if result.success:
             print("[green]✓ Training completed successfully[/green]")
-            print(f"\n[bold]Training Report:[/bold]")
+            print("\n[bold]Training Report:[/bold]")
             print(result.report)
             print(f"\n[bold]Classes:[/bold] {', '.join(result.classes)}")
         else:
@@ -140,7 +137,9 @@ def predict(limit: int = typer.Option(50, "--limit", "-l", help="Maximum predict
             spam_color = (
                 "red"
                 if action.spam_score > 0.8
-                else "green" if action.spam_score < 0.3 else "yellow"
+                else "green"
+                if action.spam_score < 0.3
+                else "yellow"
             )
             spam_score = f"[{spam_color}]{action.spam_score:.2f}[/{spam_color}]"
 
@@ -148,7 +147,9 @@ def predict(limit: int = typer.Option(50, "--limit", "-l", help="Maximum predict
             conf_color = (
                 "green"
                 if action.confidence > 0.9
-                else "yellow" if action.confidence > 0.7 else "red"
+                else "yellow"
+                if action.confidence > 0.7
+                else "red"
             )
             confidence = f"[{conf_color}]{action.confidence:.2f}[/{conf_color}]"
 
@@ -242,7 +243,7 @@ def apply(
 
         if not dry_run:
             confirm = console.input(
-                f"\n[bold red]WARNING:[/bold red] This will modify your Gmail account. Type 'yes' to continue: "
+                "\n[bold red]WARNING:[/bold red] This will modify your Gmail account. Type 'yes' to continue: "
             )
             if confirm.lower() != "yes":
                 print("[yellow]Operation cancelled.[/yellow]")
@@ -256,9 +257,9 @@ def apply(
 
         # Display results
         if dry_run:
-            print(f"[yellow]📋 DRY RUN PREVIEW:[/yellow]")
+            print("[yellow]📋 DRY RUN PREVIEW:[/yellow]")
         else:
-            print(f"[green]✅ ACTIONS APPLIED:[/green]")
+            print("[green]✅ ACTIONS APPLIED:[/green]")
 
         print(f"  • Total actions available: {result.total_actions}")
         print(f"  • Actions {'previewed' if dry_run else 'applied'}: {result.applied_actions}")
@@ -271,7 +272,7 @@ def apply(
                 print(f"  • ... and {len(result.errors) - 3} more")
 
         if dry_run and result.applied_actions > 0:
-            print(f"\n[bold blue]💡 To apply these actions for real, run:[/bold blue]")
+            print("\n[bold blue]💡 To apply these actions for real, run:[/bold blue]")
             print(f"   [dim]python cli_service.py apply --no-dry-run --limit {limit}[/dim]")
 
     except Exception as e:
@@ -290,15 +291,15 @@ def status():
             training_stats = training_service.get_training_data_stats()
 
         # Create status table
-        print(f"[bold blue]📊 Gmail ML Client Status[/bold blue]\n")
+        print("[bold blue]📊 Gmail ML Client Status[/bold blue]\n")
 
         # Training data overview
         if training_stats["total_samples"] > 0:
-            print(f"[green]✓ Training Data Available[/green]")
+            print("[green]✓ Training Data Available[/green]")
             print(f"  • Total samples: {training_stats['total_samples']}")
             print(f"  • Unique labels: {training_stats['unique_labels']}")
 
-            print(f"\n[bold]Label Distribution:[/bold]")
+            print("\n[bold]Label Distribution:[/bold]")
             for label, count in training_stats["label_counts"].items():
                 percentage = (count / training_stats["total_samples"]) * 100
                 print(f"  • {label}: {count} ({percentage:.1f}%)")
@@ -308,22 +309,22 @@ def status():
                     f"\n[yellow]⚠ Recommendation: Add more training data (current: {training_stats['total_samples']}, recommended: 50+)[/yellow]"
                 )
         else:
-            print(f"[yellow]⚠ No training data available[/yellow]")
-            print(f"  • Use 'review' command to create training data")
-            print(f"  • Then use 'train' command to build the model")
+            print("[yellow]⚠ No training data available[/yellow]")
+            print("  • Use 'review' command to create training data")
+            print("  • Then use 'train' command to build the model")
 
         # Show next steps
-        print(f"\n[bold blue]💡 Suggested Workflow:[/bold blue]")
+        print("\n[bold blue]💡 Suggested Workflow:[/bold blue]")
         if training_stats["total_samples"] == 0:
-            print(f"  1. [dim]python cli_service.py sync[/dim] - Get emails")
-            print(f"  2. [dim]python cli_service.py review[/dim] - Label emails")
-            print(f"  3. [dim]python cli_service.py train[/dim] - Train model")
+            print("  1. [dim]python cli_service.py sync[/dim] - Get emails")
+            print("  2. [dim]python cli_service.py review[/dim] - Label emails")
+            print("  3. [dim]python cli_service.py train[/dim] - Train model")
         elif training_stats["total_samples"] < 50:
-            print(f"  1. [dim]python cli_service.py review[/dim] - Add more training data")
-            print(f"  2. [dim]python cli_service.py train[/dim] - Re-train model")
+            print("  1. [dim]python cli_service.py review[/dim] - Add more training data")
+            print("  2. [dim]python cli_service.py train[/dim] - Re-train model")
         else:
-            print(f"  1. [dim]python cli_service.py predict[/dim] - See predictions")
-            print(f"  2. [dim]python cli_service.py apply --dry-run[/dim] - Preview actions")
+            print("  1. [dim]python cli_service.py predict[/dim] - See predictions")
+            print("  2. [dim]python cli_service.py apply --dry-run[/dim] - Preview actions")
 
     except Exception as e:
         logger.error(f"CLI status failed: {e}")

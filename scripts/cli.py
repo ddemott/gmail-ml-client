@@ -1,14 +1,9 @@
-import json
-import sys
-from typing import Optional
-
 import typer
 
 # from rich import box, print
 # from rich.table import Table
 from tqdm import tqdm
 
-from src.gmail_ml_client.cfg import JUNK_LABELS, SYNC_PAGE_SIZE, SYSTEM_LABELS
 from src.gmail_ml_client.data_store import init_db, mark_review, upsert_message
 from src.gmail_ml_client.gmail_client import (
     ensure_label,

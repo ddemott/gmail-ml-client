@@ -1,8 +1,5 @@
-import base64
 import os
-import re
-import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -58,8 +55,8 @@ def get_service() -> Any:
 
 
 def list_messages(
-    query: Optional[str] = None, label_ids: Optional[List[str]] = None, max_results: int = 100
-) -> List[Dict[str, str]]:
+    query: str | None = None, label_ids: list[str] | None = None, max_results: int = 100
+) -> list[dict[str, str]]:
     """List Gmail messages with error handling."""
     try:
         svc = get_service()
@@ -88,7 +85,7 @@ def list_messages(
         raise
 
 
-def get_message(msg_id: str) -> Dict[str, Any]:
+def get_message(msg_id: str) -> dict[str, Any]:
     """Get a specific Gmail message with error handling."""
     try:
         svc = get_service()
@@ -102,8 +99,8 @@ def get_message(msg_id: str) -> Dict[str, Any]:
 
 
 def modify_labels(
-    msg_id: str, add: Optional[List[str]] = None, remove: Optional[List[str]] = None
-) -> Dict[str, Any]:
+    msg_id: str, add: list[str] | None = None, remove: list[str] | None = None
+) -> dict[str, Any]:
     """Modify labels on a Gmail message with error handling."""
     try:
         svc = get_service()
@@ -119,7 +116,7 @@ def modify_labels(
         raise
 
 
-def trash_message(msg_id: str) -> Dict[str, Any]:
+def trash_message(msg_id: str) -> dict[str, Any]:
     """Move a Gmail message to trash with error handling."""
     try:
         svc = get_service()
@@ -134,7 +131,7 @@ def trash_message(msg_id: str) -> Dict[str, Any]:
         raise
 
 
-def get_labels() -> List[Dict[str, str]]:
+def get_labels() -> list[dict[str, str]]:
     """Get all Gmail labels with error handling."""
     try:
         svc = get_service()

@@ -3,8 +3,6 @@
 Add sample training data for testing
 """
 
-from datetime import datetime
-
 from src.gmail_ml_client.data_store import init_db, mark_review, upsert_message
 
 
@@ -126,7 +124,7 @@ def add_sample_training_data():
     for label, count in label_counts.items():
         print(f"   {label}: {count} emails")
 
-    print(f"\n🚀 Now you can retrain with: python simple_train.py")
+    print("\n🚀 Now you can retrain with: python simple_train.py")
 
 
 if __name__ == "__main__":

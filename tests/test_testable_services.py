@@ -3,20 +3,12 @@ Comprehensive test suite for Gmail ML Client using the testable services archite
 This focuses on testing the new testable components that we built.
 """
 
-import os
-import shutil
-import tempfile
-from unittest.mock import MagicMock, Mock, patch
-
 import pytest
 
 # Import our testable components
 from src.gmail_ml_client.interfaces import (
     EmailMessage,
     Interfaces,
-    LabelInfo,
-    PredictionResult,
-    TrainingMetrics,
     configure_dependencies_for_testing,
     get_dependency,
 )
@@ -24,7 +16,6 @@ from src.gmail_ml_client.testable_services import (
     ActionService,
     GmailService,
     PredictionService,
-    ServiceResult,
     TrainingService,
 )
 

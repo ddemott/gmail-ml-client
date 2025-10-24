@@ -3,10 +3,9 @@ Adapter implementations that wrap existing code to implement the abstract interf
 These adapters allow the existing Gmail ML Client code to work with the new interface-based architecture.
 """
 
-import json
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Import existing modules
 from . import data_store, gmail_client, model, preprocessor
@@ -42,7 +41,7 @@ class GmailApiAdapter(GmailApiInterface):
             logger.error(f"Gmail authentication failed: {e}")
             return False
 
-    def get_labels(self) -> List[LabelInfo]:
+    def get_labels(self) -> list[LabelInfo]:
         """Get all Gmail labels."""
         try:
             labels_data = gmail_client.get_labels()
@@ -68,7 +67,7 @@ class GmailApiAdapter(GmailApiInterface):
             logger.error(f"Failed to create label {name}: {e}")
             return ""
 
-    def list_messages(self, query: Optional[str] = None, max_results: int = 100) -> List[str]:
+    def list_messages(self, query: str | None = None, max_results: int = 100) -> list[str]:
         """List message IDs matching query."""
         try:
             return gmail_client.list_messages(query=query, max_results=max_results)
@@ -97,7 +96,7 @@ class GmailApiAdapter(GmailApiInterface):
             raise
 
     def modify_message_labels(
-        self, message_id: str, add_labels: List[str], remove_labels: List[str]
+        self, message_id: str, add_labels: list[str], remove_labels: list[str]
     ) -> bool:
         """Modify message labels."""
         try:
@@ -116,7 +115,7 @@ class GmailApiAdapter(GmailApiInterface):
             logger.error(f"Failed to trash message {message_id}: {e}")
             return False
 
-    def get_rate_limit_status(self) -> Dict[str, Any]:
+    def get_rate_limit_status(self) -> dict[str, Any]:
         """Get current rate limit status."""
         # This would need to be implemented based on quota tracking
         return {"remaining_quota": 1000000, "reset_time": datetime.now().isoformat()}
@@ -138,7 +137,7 @@ class DatabaseAdapter(DatabaseInterface):
             logger.error(f"Database initialization failed: {e}")
             return False
 
-    def store_messages(self, messages: List[EmailMessage]) -> int:
+    def store_messages(self, messages: list[EmailMessage]) -> int:
         """Store messages and return count of successfully stored."""
         if not self._initialized:
             return 0
@@ -162,7 +161,7 @@ class DatabaseAdapter(DatabaseInterface):
 
         return stored_count
 
-    def get_message(self, message_id: str) -> Optional[EmailMessage]:
+    def get_message(self, message_id: str) -> EmailMessage | None:
         """Get a single message by ID."""
         try:
             msg_data = data_store.get_message(message_id)
@@ -183,7 +182,7 @@ class DatabaseAdapter(DatabaseInterface):
             logger.error(f"Failed to get message {message_id}: {e}")
             return None
 
-    def get_messages_for_training(self, limit: Optional[int] = None) -> List[EmailMessage]:
+    def get_messages_for_training(self, limit: int | None = None) -> list[EmailMessage]:
         """Get messages with user-reviewed labels for training."""
         try:
             messages_data = data_store.fetch_for_training(limit)
@@ -204,7 +203,7 @@ class DatabaseAdapter(DatabaseInterface):
             logger.error(f"Failed to get training messages: {e}")
             return []
 
-    def get_messages_for_prediction(self, limit: Optional[int] = None) -> List[EmailMessage]:
+    def get_messages_for_prediction(self, limit: int | None = None) -> list[EmailMessage]:
         """Get unreviewed messages for prediction."""
         try:
             messages_data = data_store.fetch_for_prediction(limit)
@@ -250,7 +249,7 @@ class DatabaseAdapter(DatabaseInterface):
             logger.error(f"Failed to save prediction for {message_id}: {e}")
             return False
 
-    def get_training_stats(self) -> Dict[str, Any]:
+    def get_training_stats(self) -> dict[str, Any]:
         """Get training data statistics."""
         try:
             return data_store.get_training_stats()
@@ -269,7 +268,7 @@ class FileSystemAdapter(FileSystemInterface):
     def read_file(self, path: str) -> str:
         """Read text file content."""
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 return f.read()
         except Exception as e:
             logger.error(f"Failed to read file {path}: {e}")
@@ -315,7 +314,7 @@ class FileSystemAdapter(FileSystemInterface):
             logger.error(f"Failed to create directory {path}: {e}")
             return False
 
-    def list_files(self, directory: str, pattern: Optional[str] = None) -> List[str]:
+    def list_files(self, directory: str, pattern: str | None = None) -> list[str]:
         """List files in directory matching pattern."""
         try:
             import glob
@@ -372,7 +371,7 @@ class ModelAdapter(ModelInterface):
             return False
 
     def train(
-        self, training_data: List[Tuple[str, str]], epochs: int = 6, batch_size: int = 64
+        self, training_data: list[tuple[str, str]], epochs: int = 6, batch_size: int = 64
     ) -> TrainingMetrics:
         """Train model on labeled data."""
         try:
@@ -417,11 +416,11 @@ class ModelAdapter(ModelInterface):
             logger.error(f"Prediction failed for text: {e}")
             raise
 
-    def predict_batch(self, texts: List[str]) -> List[PredictionResult]:
+    def predict_batch(self, texts: list[str]) -> list[PredictionResult]:
         """Predict labels for multiple texts."""
         return [self.predict(text) for text in texts]
 
-    def get_model_info(self) -> Dict[str, Any]:
+    def get_model_info(self) -> dict[str, Any]:
         """Get model metadata and performance info."""
         try:
             return model.get_model_info()
@@ -439,7 +438,7 @@ class ModelAdapter(ModelInterface):
 class TextProcessorAdapter(TextProcessorInterface):
     """Adapter for existing preprocessor module."""
 
-    def extract_features(self, text: str) -> Dict[str, Any]:
+    def extract_features(self, text: str) -> dict[str, Any]:
         """Extract features from text."""
         try:
             return preprocessor.extract_features(text)
@@ -498,7 +497,7 @@ class ConfigurationAdapter(ConfigurationInterface):
 
         self._config = reload_config()
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate configuration and return errors."""
         return self._config.validate()
 

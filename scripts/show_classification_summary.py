@@ -37,14 +37,14 @@ def show_classification_summary():
             .all()
         )
 
-        print(f"\n🏷️  Top Classifications:")
+        print("\n🏷️  Top Classifications:")
         print("-" * 40)
 
         for result in results:
             print(f"   {result.target_label}: {result.count} emails")
 
         # Show recently processed emails
-        print(f"\n📧 Recent Classifications:")
+        print("\n📧 Recent Classifications:")
         print("-" * 40)
 
         recent = (
@@ -59,7 +59,7 @@ def show_classification_summary():
             snippet = (msg.snippet or msg.text[:80] if msg.text else "No content")[:60]
             print(f'   {msg.target_label}: "{snippet}..."')
 
-        print(f"\n🎯 SUCCESS SUMMARY:")
+        print("\n🎯 SUCCESS SUMMARY:")
         print("=" * 30)
         print("✅ Your Gmail ML Client is working!")
         print("✅ Emails are being automatically classified")

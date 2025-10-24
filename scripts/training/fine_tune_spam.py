@@ -10,7 +10,6 @@ import sys
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import random
 
 from gmail_client import get_message, list_messages
 from model import load, predict
@@ -59,13 +58,13 @@ def main():
                     }
                 )
 
-            except Exception as e:
+            except Exception:
                 continue
 
         # Test different spam thresholds
         thresholds = [0.3, 0.5, 0.7, 0.8, 0.9]
 
-        print(f"\n🎯 Testing Different SPAM Detection Thresholds:")
+        print("\n🎯 Testing Different SPAM Detection Thresholds:")
         print("=" * 60)
 
         for threshold in thresholds:
@@ -93,7 +92,7 @@ def main():
 
             print(f"\n   Results: {spam_count} spam, {legitimate_count} legitimate")
 
-        print(f"\n💡 RECOMMENDATIONS:")
+        print("\n💡 RECOMMENDATIONS:")
         print("=" * 40)
         print("🎯 Threshold 0.7 (70%) - Balanced approach")
         print("   • Catches obvious spam")
@@ -107,13 +106,13 @@ def main():
         print("   • Only flags very obvious spam")
         print("   • May miss some subtle spam")
 
-        print(f"\n📝 NEXT STEPS:")
+        print("\n📝 NEXT STEPS:")
         print("1. Choose a threshold that works for your email patterns")
         print("2. Monitor results and adjust as needed")
         print("3. Add more training data for edge cases")
         print("4. Consider creating a 'Newsletter' category for legitimate marketing")
 
-        print(f"\n🔧 TO ADJUST THRESHOLD:")
+        print("\n🔧 TO ADJUST THRESHOLD:")
         print("• Modify the spam detection logic in your application")
         print("• Use spam_score > threshold instead of just prediction == 'SPAM'")
         print("• You can implement this in the prediction testing scripts")

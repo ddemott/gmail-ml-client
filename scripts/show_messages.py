@@ -59,12 +59,12 @@ def show_available_messages():
     conn.close()
 
     if unreviewed:
-        print(f"\n💡 Copy one of the message IDs above to use in /api/review")
-        print(f"Example for first message:")
-        print(f"{{")
+        print("\n💡 Copy one of the message IDs above to use in /api/review")
+        print("Example for first message:")
+        print("{")
         print(f'  "message_id": "{unreviewed[0][0]}",')
-        print(f'  "label": "[Gmail]/Amazon"')
-        print(f"}}")
+        print('  "label": "[Gmail]/Amazon"')
+        print("}")
 
 
 if __name__ == "__main__":

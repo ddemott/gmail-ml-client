@@ -46,18 +46,18 @@ def show_available_messages():
         cursor.execute("SELECT msg_id, snippet FROM messages LIMIT 5")
         simple_messages = cursor.fetchall()
 
-        print(f"📝 Ready to use message IDs:")
+        print("📝 Ready to use message IDs:")
         for msg_id, snippet in simple_messages:
             print(f"   ID: {msg_id}")
             print(f"   📧 {snippet[:70]}...")
             print()
 
         if simple_messages:
-            print(f"💡 Copy one of these IDs to use in /api/review:")
-            print(f"{{")
+            print("💡 Copy one of these IDs to use in /api/review:")
+            print("{")
             print(f'  "message_id": "{simple_messages[0][0]}",')
-            print(f'  "label": "[Gmail]/Amazon"')
-            print(f"}}")
+            print('  "label": "[Gmail]/Amazon"')
+            print("}")
     except Exception as e:
         print(f"Error getting simple messages: {e}")
 

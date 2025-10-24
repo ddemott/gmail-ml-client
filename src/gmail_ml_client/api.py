@@ -4,19 +4,14 @@ Provides REST endpoints for React and other client applications.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 
 import uvicorn
-from fastapi import Body, FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from .logger import logger
 from .services import (
-    ActionType,
-    ApplyResult,
-    EmailAction,
-    SyncResult,
     TrainingResult,
     action_service,
     gmail_service,
@@ -45,7 +40,7 @@ class LabelInfo(BaseModel):
 class SyncRequest(BaseModel):
     """Request for email synchronization."""
 
-    query: Optional[str] = Field(None, description="Gmail search query")
+    query: str | None = Field(None, description="Gmail search query")
     limit: int = Field(200, ge=1, le=1000, description="Maximum messages to sync")
 
 
@@ -55,7 +50,7 @@ class SyncResponse(BaseModel):
     total_messages: int
     processed_messages: int
     failed_messages: int
-    errors: List[str]
+    errors: list[str]
     sync_time: str
 
 
@@ -66,15 +61,15 @@ class EmailActionResponse(BaseModel):
     snippet: str
     spam_score: float
     confidence: float
-    predicted_label: Optional[str]
-    target_label: Optional[str]
+    predicted_label: str | None
+    target_label: str | None
     action: str
 
 
 class PredictionResponse(BaseModel):
     """Response for predictions."""
 
-    actions: List[EmailActionResponse]
+    actions: list[EmailActionResponse]
     total_count: int
     prediction_time: str
 
@@ -103,7 +98,7 @@ class TrainingStatsResponse(BaseModel):
     """Response for training data statistics."""
 
     total_samples: int
-    label_counts: Dict[str, int]
+    label_counts: dict[str, int]
     unique_labels: int
 
 
@@ -120,7 +115,7 @@ class ApplyResponse(BaseModel):
     total_actions: int
     applied_actions: int
     dry_run: bool
-    errors: List[str]
+    errors: list[str]
     apply_time: str
 
 
@@ -168,7 +163,7 @@ async def initialize():
         raise HTTPException(status_code=500, detail=f"Initialization failed: {str(e)}")
 
 
-@app.get("/api/labels", response_model=List[LabelInfo])
+@app.get("/api/labels", response_model=list[LabelInfo])
 async def get_labels():
     """Get all Gmail labels."""
     try:
@@ -184,7 +179,7 @@ async def get_labels():
         raise HTTPException(status_code=500, detail=f"Failed to get labels: {str(e)}")
 
 
-@app.post("/api/labels/ensure", response_model=Dict[str, str])
+@app.post("/api/labels/ensure", response_model=dict[str, str])
 async def ensure_default_labels():
     """Create default target labels if missing."""
     try:
@@ -216,7 +211,7 @@ async def sync_emails(request: SyncRequest):
 
 @app.get("/api/predictions", response_model=PredictionResponse)
 async def get_predictions(
-    limit: int = Query(50, ge=1, le=200, description="Maximum predictions to return")
+    limit: int = Query(50, ge=1, le=200, description="Maximum predictions to return"),
 ):
     """Get predictions for unreviewed messages."""
     try:

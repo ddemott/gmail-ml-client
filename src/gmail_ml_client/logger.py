@@ -2,12 +2,10 @@
 
 import logging
 import os
-from datetime import datetime
-from typing import Optional
 
 
 def setup_logger(
-    name: str = "gmail_ml_client", level: str = "INFO", log_file: Optional[str] = None
+    name: str = "gmail_ml_client", level: str = "INFO", log_file: str | None = None
 ) -> logging.Logger:
     """Set up a logger with console and optional file output."""
     logger = logging.getLogger(name)

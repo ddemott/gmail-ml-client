@@ -3,13 +3,12 @@ Enhanced services with integrated layers for configuration, authentication, vali
 This demonstrates how all the separation layers work together in a cohesive architecture.
 """
 
-import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Import existing modules
-from . import data_store, gmail_client, model, preprocessor, sorter
+from . import data_store, gmail_client, model, sorter
 from .auth_manager import AuthenticationManager, get_auth_manager
 from .cache_layer import (
     cache_email,
@@ -18,7 +17,6 @@ from .cache_layer import (
     create_namespace,
     get_cached_email,
     get_cached_prediction,
-    get_default_cache_manager,
 )
 
 # Import our new layers
@@ -40,8 +38,8 @@ class ServiceResponse:
     success: bool
     data: Any = None
     message: str = ""
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
     @classmethod
     def success_response(cls, data: Any = None, message: str = "") -> "ServiceResponse":
@@ -49,7 +47,7 @@ class ServiceResponse:
         return cls(success=True, data=data, message=message)
 
     @classmethod
-    def error_response(cls, message: str, errors: Optional[List[str]] = None) -> "ServiceResponse":
+    def error_response(cls, message: str, errors: list[str] | None = None) -> "ServiceResponse":
         """Create an error response."""
         return cls(success=False, message=message, errors=errors or [message])
 
@@ -101,7 +99,7 @@ class EnhancedGmailService:
             return ServiceResponse.error_response(f"Initialization failed: {str(e)}")
 
     @cached(ttl_seconds=300, key_func=lambda self, label_id=None: f"labels_{label_id or 'all'}")
-    def get_labels(self, label_id: Optional[str] = None) -> ServiceResponse:
+    def get_labels(self, label_id: str | None = None) -> ServiceResponse:
         """Get Gmail labels with caching."""
         try:
             service = self.auth_manager.get_service("gmail", "v1")
@@ -132,7 +130,7 @@ class EnhancedGmailService:
             logger.error(f"Failed to get labels: {e}")
             return ServiceResponse.error_response(f"Failed to get labels: {str(e)}")
 
-    def sync_emails(self, max_results: Optional[int] = None) -> ServiceResponse:
+    def sync_emails(self, max_results: int | None = None) -> ServiceResponse:
         """Sync emails with validation and caching."""
         try:
             # Use configured sync page size
@@ -372,7 +370,7 @@ class EnhancedEmailSyncService:
         self.prediction_service = EnhancedPredictionService()
         self.cache = create_namespace("sync")
 
-    def full_sync_and_predict(self, max_emails: Optional[int] = None) -> ServiceResponse:
+    def full_sync_and_predict(self, max_emails: int | None = None) -> ServiceResponse:
         """Perform full sync with predictions."""
         try:
             # Initialize if needed
@@ -451,7 +449,7 @@ def initialize_services() -> bool:
         return False
 
 
-def get_service_stats() -> Dict[str, Any]:
+def get_service_stats() -> dict[str, Any]:
     """Get statistics from all services."""
     from cache_layer import get_cache_stats
 

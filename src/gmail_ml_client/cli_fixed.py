@@ -1,11 +1,8 @@
-from typing import Optional
-
 import typer
 from rich import box, print
 from rich.table import Table
 from tqdm import tqdm
 
-from .cfg import JUNK_LABELS, SYNC_PAGE_SIZE, SYSTEM_LABELS
 from .data_store import init_db, mark_review, upsert_message
 from .gmail_client import (
     ensure_label,
@@ -54,7 +51,7 @@ def ensure_labels() -> None:
 
 
 @app.command()
-def sync(q: Optional[str] = None, limit: int = 200) -> None:
+def sync(q: str | None = None, limit: int = 200) -> None:
     """Fetch messages into local store (subject+body text only)."""
     try:
         logger.info(f"Starting sync with query='{q}', limit={limit}")

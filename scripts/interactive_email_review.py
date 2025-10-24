@@ -75,7 +75,7 @@ def interactive_email_review():
             conf = candidate["confidence"]
             spam_score = candidate["spam_score"]
 
-            print(f"\n" + "=" * 70)
+            print("\n" + "=" * 70)
             print(f"📧 EMAIL {i}/{len(review_candidates)}")
             print(f"ID: {msg.id}")
             print(f"Current Label: {msg.target_label}")
@@ -121,7 +121,7 @@ def interactive_email_review():
             print("q. Quit review")
 
             while True:
-                choice = input(f"\nChoose option (0-9, q): ").strip().lower()
+                choice = input("\nChoose option (0-9, q): ").strip().lower()
 
                 if choice == "1":
                     # Keep current, just mark as reviewed
@@ -136,7 +136,7 @@ def interactive_email_review():
                     msg.target_label = "SPAM"
                     msg.reviewed = True
                     session.commit()
-                    print(f"🚫 Changed to: SPAM")
+                    print("🚫 Changed to: SPAM")
                     reviewed_count += 1
                     break
 
@@ -145,7 +145,7 @@ def interactive_email_review():
                     msg.target_label = "[Gmail]/Job"
                     msg.reviewed = True
                     session.commit()
-                    print(f"💼 Changed to: [Gmail]/Job")
+                    print("💼 Changed to: [Gmail]/Job")
                     reviewed_count += 1
                     break
 
@@ -154,7 +154,7 @@ def interactive_email_review():
                     msg.target_label = "[Gmail]/Finance"
                     msg.reviewed = True
                     session.commit()
-                    print(f"💰 Changed to: [Gmail]/Finance")
+                    print("💰 Changed to: [Gmail]/Finance")
                     reviewed_count += 1
                     break
 
@@ -163,7 +163,7 @@ def interactive_email_review():
                     msg.target_label = "CATEGORY_PROMOTIONS"
                     msg.reviewed = True
                     session.commit()
-                    print(f"📢 Changed to: CATEGORY_PROMOTIONS")
+                    print("📢 Changed to: CATEGORY_PROMOTIONS")
                     reviewed_count += 1
                     break
 
@@ -172,7 +172,7 @@ def interactive_email_review():
                     msg.target_label = "CATEGORY_PERSONAL"
                     msg.reviewed = True
                     session.commit()
-                    print(f"👤 Changed to: CATEGORY_PERSONAL")
+                    print("👤 Changed to: CATEGORY_PERSONAL")
                     reviewed_count += 1
                     break
 
@@ -181,7 +181,7 @@ def interactive_email_review():
                     msg.target_label = "CATEGORY_UPDATES"
                     msg.reviewed = True
                     session.commit()
-                    print(f"📰 Changed to: CATEGORY_UPDATES")
+                    print("📰 Changed to: CATEGORY_UPDATES")
                     reviewed_count += 1
                     break
 
@@ -225,19 +225,19 @@ def interactive_email_review():
             if choice == "q":
                 break
 
-        print(f"\n🎉 REVIEW COMPLETE!")
+        print("\n🎉 REVIEW COMPLETE!")
         print("=" * 40)
         print(f"Emails reviewed: {reviewed_count}")
         print(f"Total processed: {i}")
 
         if reviewed_count > 0:
-            print(f"\n🤖 Recommendations:")
+            print("\n🤖 Recommendations:")
             print("• Consider retraining the model with these corrections:")
             print("  python simple_train.py")
             print("• Your corrections will improve future classifications!")
 
     except KeyboardInterrupt:
-        print(f"\n\n👋 Review interrupted. Saving changes...")
+        print("\n\n👋 Review interrupted. Saving changes...")
         session.commit()
 
     finally:

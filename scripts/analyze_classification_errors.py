@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from data_store import Message, Session, init_db
 from model import predict
-from sqlalchemy import desc, func
+from sqlalchemy import desc
 
 
 def analyze_classification_errors():
@@ -31,7 +31,7 @@ def analyze_classification_errors():
         print(f"📊 Total classified emails in system: {total_emails}")
 
         # Find emails with low confidence that might be errors
-        print(f"\n🔍 Finding potentially problematic classifications...")
+        print("\n🔍 Finding potentially problematic classifications...")
 
         # Get recent unreviewed emails
         recent_emails = (
@@ -111,7 +111,7 @@ def analyze_classification_errors():
                 continue
 
         # Report findings
-        print(f"\n📊 ERROR ANALYSIS RESULTS")
+        print("\n📊 ERROR ANALYSIS RESULTS")
         print("=" * 40)
         print(f"Emails analyzed: {len(recent_emails)}")
         print(f"Model inconsistencies: {len(inconsistencies)}")
@@ -120,7 +120,7 @@ def analyze_classification_errors():
 
         # Show model inconsistencies (most important)
         if inconsistencies:
-            print(f"\n❌ MODEL INCONSISTENCIES (Potential Errors):")
+            print("\n❌ MODEL INCONSISTENCIES (Potential Errors):")
             print("-" * 50)
 
             for i, error in enumerate(inconsistencies[:10], 1):  # Show top 10
@@ -135,19 +135,19 @@ def analyze_classification_errors():
                 # Show pattern analysis
                 if "job" in error["text"].lower() and error["stored"] != error["predicted"]:
                     if "job" in error["predicted"].lower() or "job" in error["stored"].lower():
-                        print(f"   🎯 Pattern: Job-related classification difference")
+                        print("   🎯 Pattern: Job-related classification difference")
 
                 if error["stored"] == "SPAM" and error["predicted"] != "SPAM":
                     print(
-                        f"   🚨 Pattern: Potential false positive (legitimate email marked as spam)"
+                        "   🚨 Pattern: Potential false positive (legitimate email marked as spam)"
                     )
 
                 if error["stored"] != "SPAM" and error["predicted"] == "SPAM":
-                    print(f"   🚨 Pattern: Potential false negative (spam not detected)")
+                    print("   🚨 Pattern: Potential false negative (spam not detected)")
 
         # Show low confidence classifications
         if low_confidence:
-            print(f"\n⚠️  LOW CONFIDENCE CLASSIFICATIONS:")
+            print("\n⚠️  LOW CONFIDENCE CLASSIFICATIONS:")
             print("-" * 40)
 
             for i, issue in enumerate(low_confidence[:5], 1):  # Show top 5
@@ -159,7 +159,7 @@ def analyze_classification_errors():
 
         # Show borderline spam
         if spam_borderline:
-            print(f"\n🚨 BORDERLINE SPAM CLASSIFICATIONS:")
+            print("\n🚨 BORDERLINE SPAM CLASSIFICATIONS:")
             print("-" * 40)
 
             for i, issue in enumerate(spam_borderline[:5], 1):  # Show top 5
@@ -172,7 +172,7 @@ def analyze_classification_errors():
         # Overall assessment
         total_issues = len(inconsistencies) + len(low_confidence) + len(spam_borderline)
 
-        print(f"\n🎯 OVERALL ASSESSMENT:")
+        print("\n🎯 OVERALL ASSESSMENT:")
         print("=" * 30)
 
         if total_issues == 0:
@@ -195,7 +195,7 @@ def analyze_classification_errors():
             print(f"📊 Issue rate: {(total_issues/len(recent_emails)*100):.1f}%")
             print("🔧 Recommend reviewing and correcting flagged emails")
 
-        print(f"\n💡 NEXT STEPS:")
+        print("\n💡 NEXT STEPS:")
         if inconsistencies:
             print("• Review model inconsistencies first (highest priority)")
         if low_confidence:

@@ -36,7 +36,7 @@ def main():
                 .count()
             )
 
-            print(f"📊 Current Training Data:")
+            print("📊 Current Training Data:")
             print(f"   Total messages: {total_messages}")
             print(f"   TRASH-related messages: {trash_messages}")
 
@@ -60,14 +60,14 @@ def main():
             print(f"\n📊 Clean Training Data: {remaining_messages} messages")
 
             # Show what categories remain
-            print(f"\n📁 Remaining Categories:")
+            print("\n📁 Remaining Categories:")
             categories = session.query(Message.target_label).distinct().all()
             for i, (category,) in enumerate(categories, 1):
                 if category:
                     count = session.query(Message).filter_by(target_label=category).count()
                     print(f"   {i:2d}. {category} ({count} messages)")
 
-            print(f"\n🎯 Benefits of Removing TRASH:")
+            print("\n🎯 Benefits of Removing TRASH:")
             print("• Model won't try to predict 'TRASH' category")
             print("• Focuses on useful predictions (SPAM, categories, etc.)")
             print("• Cleaner, more purposeful training data")
@@ -77,17 +77,17 @@ def main():
             session.close()
 
         # Retrain the model without any TRASH data
-        print(f"\n🤖 Retraining model without TRASH category...")
+        print("\n🤖 Retraining model without TRASH category...")
         simple_train()
 
-        print(f"\n🎉 SUCCESS!")
+        print("\n🎉 SUCCESS!")
         print("=" * 30)
         print("✅ All TRASH training data removed")
         print("✅ Model retrained with clean categories only")
         print("✅ No more 'TRASH' predictions")
         print("✅ Focus on useful email categorization")
 
-        print(f"\n📝 NOW YOUR MODEL PREDICTS:")
+        print("\n📝 NOW YOUR MODEL PREDICTS:")
         print("• SPAM - for spam detection")
         print("• [Gmail]/Job - for job-related emails")
         print("• [Gmail]/Finance - for financial emails")

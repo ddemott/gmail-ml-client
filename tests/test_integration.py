@@ -8,22 +8,13 @@ import shutil
 import sqlite3
 import sys
 import tempfile
-from typing import Any, Dict, List
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 
 # Import modules for integration testing
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.gmail_ml_client import (
-    cfg,
-    data_store,
-    gmail_client,
-    model,
-    preprocessor,
-    sorter,
-    trainer,
-)
+from src.gmail_ml_client import cfg, data_store, preprocessor, sorter
 from src.gmail_ml_client.interfaces import (
     Interfaces,
     configure_dependencies_for_testing,
@@ -45,7 +36,6 @@ class TestDataStorePersistence:
         # Create temporary database
         self.temp_dir = tempfile.mkdtemp()
         self.db_path = os.path.join(self.temp_dir, "test.db")
-        from src.gmail_ml_client import cfg
 
         cfg.DB_PATH = self.db_path
         data_store.init_db()
@@ -118,7 +108,6 @@ class TestEmailProcessingWorkflow:
         """Setup test environment."""
         self.temp_dir = tempfile.mkdtemp()
         self.db_path = os.path.join(self.temp_dir, "test.db")
-        from src.gmail_ml_client import cfg
 
         cfg.DB_PATH = self.db_path
         data_store.init_db()

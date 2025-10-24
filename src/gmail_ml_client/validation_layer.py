@@ -3,13 +3,13 @@ Validation layer for data integrity and business rules.
 Provides comprehensive validation for emails, predictions, and user inputs.
 """
 
-import email
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 from .logger import logger
 
@@ -28,9 +28,9 @@ class ValidationResult:
     """Result of a validation operation."""
 
     is_valid: bool
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    info: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    info: list[str] = field(default_factory=list)
 
     def add_error(self, message: str) -> None:
         """Add an error message."""
@@ -53,7 +53,7 @@ class ValidationResult:
         self.warnings.extend(other.warnings)
         self.info.extend(other.info)
 
-    def get_all_messages(self) -> Dict[str, List[str]]:
+    def get_all_messages(self) -> dict[str, list[str]]:
         """Get all messages grouped by severity."""
         return {"errors": self.errors, "warnings": self.warnings, "info": self.info}
 
@@ -76,7 +76,7 @@ class EmailValidator(Validator):
         self.max_subject_length = 998  # RFC 2822 limit
         self.max_body_length = 10 * 1024 * 1024  # 10MB limit
 
-    def validate(self, email_data: Dict[str, Any]) -> ValidationResult:
+    def validate(self, email_data: dict[str, Any]) -> ValidationResult:
         """Validate email data."""
         result = ValidationResult(is_valid=True)
 
@@ -154,11 +154,11 @@ class EmailValidator(Validator):
 class PredictionValidator(Validator):
     """Validates ML prediction results."""
 
-    def __init__(self, valid_labels: Optional[Set[str]] = None):
+    def __init__(self, valid_labels: set[str] | None = None):
         self.valid_labels = valid_labels or set()
         self.confidence_range = (0.0, 1.0)
 
-    def validate(self, prediction_data: Dict[str, Any]) -> ValidationResult:
+    def validate(self, prediction_data: dict[str, Any]) -> ValidationResult:
         """Validate prediction data."""
         result = ValidationResult(is_valid=True)
 
@@ -219,7 +219,7 @@ class PredictionValidator(Validator):
 class LabelValidator(Validator):
     """Validates label operations and configurations."""
 
-    def __init__(self, system_labels: Optional[Set[str]] = None):
+    def __init__(self, system_labels: set[str] | None = None):
         self.system_labels = system_labels or {
             "INBOX",
             "UNREAD",
@@ -239,7 +239,7 @@ class LabelValidator(Validator):
         self.label_name_pattern = re.compile(r"^[a-zA-Z0-9_\-\s]+$")
         self.max_label_length = 100
 
-    def validate(self, label_data: Union[str, Dict[str, Any]]) -> ValidationResult:
+    def validate(self, label_data: str | dict[str, Any]) -> ValidationResult:
         """Validate label data."""
         result = ValidationResult(is_valid=True)
 
@@ -298,7 +298,7 @@ class TrainingDataValidator(Validator):
         self.min_samples_per_label = min_samples_per_label
         self.email_validator = EmailValidator()
 
-    def validate(self, training_data: List[Dict[str, Any]]) -> ValidationResult:
+    def validate(self, training_data: list[dict[str, Any]]) -> ValidationResult:
         """Validate training dataset."""
         result = ValidationResult(is_valid=True)
 
@@ -364,14 +364,14 @@ class ValidationChain:
     """Chains multiple validators together."""
 
     def __init__(self):
-        self.validators: List[Tuple[str, Validator]] = []
+        self.validators: list[tuple[str, Validator]] = []
 
     def add_validator(self, name: str, validator: Validator) -> "ValidationChain":
         """Add a validator to the chain."""
         self.validators.append((name, validator))
         return self
 
-    def validate(self, data: Any) -> Dict[str, ValidationResult]:
+    def validate(self, data: Any) -> dict[str, ValidationResult]:
         """Run all validators in the chain."""
         results = {}
 
@@ -403,7 +403,7 @@ class ValidationRuleBuilder:
     """Builder for creating custom validation rules."""
 
     def __init__(self):
-        self.rules: List[Callable[[Any], ValidationResult]] = []
+        self.rules: list[Callable[[Any], ValidationResult]] = []
 
     def add_rule(self, rule_func: Callable[[Any], ValidationResult]) -> "ValidationRuleBuilder":
         """Add a validation rule function."""
@@ -470,13 +470,13 @@ label_validator = LabelValidator()
 training_data_validator = TrainingDataValidator()
 
 
-def validate_email(email_data: Dict[str, Any]) -> ValidationResult:
+def validate_email(email_data: dict[str, Any]) -> ValidationResult:
     """Validate email data (convenience function)."""
     return email_validator.validate(email_data)
 
 
 def validate_prediction(
-    prediction_data: Dict[str, Any], valid_labels: Optional[Set[str]] = None
+    prediction_data: dict[str, Any], valid_labels: set[str] | None = None
 ) -> ValidationResult:
     """Validate prediction data (convenience function)."""
     if valid_labels:
@@ -485,12 +485,12 @@ def validate_prediction(
     return prediction_validator.validate(prediction_data)
 
 
-def validate_label(label_data: Union[str, Dict[str, Any]]) -> ValidationResult:
+def validate_label(label_data: str | dict[str, Any]) -> ValidationResult:
     """Validate label data (convenience function)."""
     return label_validator.validate(label_data)
 
 
-def validate_training_data(training_data: List[Dict[str, Any]]) -> ValidationResult:
+def validate_training_data(training_data: list[dict[str, Any]]) -> ValidationResult:
     """Validate training data (convenience function)."""
     return training_data_validator.validate(training_data)
 
@@ -504,7 +504,7 @@ def create_email_validation_chain() -> ValidationChain:
     )
 
 
-def create_prediction_validation_chain(valid_labels: Optional[Set[str]] = None) -> ValidationChain:
+def create_prediction_validation_chain(valid_labels: set[str] | None = None) -> ValidationChain:
     """Create a validation chain for prediction results."""
     return ValidationChain().add_validator("prediction_format", PredictionValidator(valid_labels))
 

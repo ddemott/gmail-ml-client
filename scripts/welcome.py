@@ -10,7 +10,7 @@ from pathlib import Path
 
 from rich.console import Console
 from rich.panel import Panel
-from rich.prompt import Confirm, Prompt
+from rich.prompt import Confirm
 from rich.text import Text
 
 console = Console()
@@ -183,7 +183,7 @@ def main():
         show_next_steps()
 
     # Final message
-    console.print(f"\n[dim]Run 'python welcome.py' anytime to return to this setup wizard.[/dim]")
+    console.print("\n[dim]Run 'python welcome.py' anytime to return to this setup wizard.[/dim]")
 
 
 if __name__ == "__main__":

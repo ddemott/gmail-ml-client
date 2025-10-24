@@ -130,7 +130,7 @@ def high_volume_processing():
                 time.sleep(0.5)
 
             # Show final statistics
-            print(f"\n🎉 HIGH-VOLUME PROCESSING COMPLETE!")
+            print("\n🎉 HIGH-VOLUME PROCESSING COMPLETE!")
             print("=" * 50)
             print(f"📧 Total emails found: {len(messages)}")
             print(f"✅ Already classified: {classified}")
@@ -140,7 +140,7 @@ def high_volume_processing():
             )
 
             # Show updated classification summary
-            print(f"\n📊 UPDATED CLASSIFICATION SUMMARY:")
+            print("\n📊 UPDATED CLASSIFICATION SUMMARY:")
             print("-" * 40)
 
             # Get top 15 classifications
@@ -159,7 +159,7 @@ def high_volume_processing():
                 percentage = (result.count / total_classified_now) * 100
                 print(f"   {result.target_label}: {result.count} emails ({percentage:.1f}%)")
 
-            print(f"\n🎯 NEXT STEPS:")
+            print("\n🎯 NEXT STEPS:")
             print("• Start web interface: python -m uvicorn api:app --host localhost --port 8000")
             print("• Review classifications at: http://localhost:8000/docs")
             print("• Your email organization system is running at scale!")

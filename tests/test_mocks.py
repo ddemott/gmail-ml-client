@@ -3,11 +3,9 @@ Mock implementations for testing.
 Provides controllable, predictable implementations of all external dependencies.
 """
 
-import json
 import threading
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import Mock
+from typing import Any
 
 from src.gmail_ml_client.interfaces import (
     ConfigurationInterface,
@@ -72,7 +70,7 @@ class MockGmailApi(GmailApiInterface):
         self.authenticated = True
         return True
 
-    def get_labels(self) -> List[LabelInfo]:
+    def get_labels(self) -> list[LabelInfo]:
         """Get all Gmail labels."""
         self.call_log.append(("get_labels",))
         if not self.authenticated or self.should_fail:
@@ -89,7 +87,7 @@ class MockGmailApi(GmailApiInterface):
         self.labels.append(LabelInfo(id=label_id, name=name, type="user"))
         return label_id
 
-    def list_messages(self, query: Optional[str] = None, max_results: int = 100) -> List[str]:
+    def list_messages(self, query: str | None = None, max_results: int = 100) -> list[str]:
         """List message IDs matching query."""
         self.call_log.append(("list_messages", query, max_results))
         if not self.authenticated or self.should_fail:
@@ -110,7 +108,7 @@ class MockGmailApi(GmailApiInterface):
         return self.messages[message_id]
 
     def modify_message_labels(
-        self, message_id: str, add_labels: List[str], remove_labels: List[str]
+        self, message_id: str, add_labels: list[str], remove_labels: list[str]
     ) -> bool:
         """Modify message labels."""
         self.call_log.append(("modify_message_labels", message_id, add_labels, remove_labels))
@@ -139,7 +137,7 @@ class MockGmailApi(GmailApiInterface):
             return True
         return False
 
-    def get_rate_limit_status(self) -> Dict[str, Any]:
+    def get_rate_limit_status(self) -> dict[str, Any]:
         """Get current rate limit status."""
         self.call_log.append(("get_rate_limit_status",))
         return {
@@ -156,7 +154,7 @@ class MockGmailApi(GmailApiInterface):
         """Add a test message."""
         self.messages[message.id] = message
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all API calls made."""
         return self.call_log.copy()
 
@@ -174,9 +172,9 @@ class MockDatabase(DatabaseInterface):
 
     def __init__(self):
         self.initialized = False
-        self.messages: Dict[str, EmailMessage] = {}
-        self.reviewed_messages: Dict[str, str] = {}  # message_id -> label
-        self.predictions: Dict[str, PredictionResult] = {}
+        self.messages: dict[str, EmailMessage] = {}
+        self.reviewed_messages: dict[str, str] = {}  # message_id -> label
+        self.predictions: dict[str, PredictionResult] = {}
         self.call_log = []
         self.should_fail = False
 
@@ -188,7 +186,7 @@ class MockDatabase(DatabaseInterface):
         self.initialized = True
         return True
 
-    def store_messages(self, messages: List[EmailMessage]) -> int:
+    def store_messages(self, messages: list[EmailMessage]) -> int:
         """Store messages and return count of successfully stored."""
         self.call_log.append(("store_messages", len(messages)))
         if not self.initialized or self.should_fail:
@@ -200,14 +198,14 @@ class MockDatabase(DatabaseInterface):
             stored_count += 1
         return stored_count
 
-    def get_message(self, message_id: str) -> Optional[EmailMessage]:
+    def get_message(self, message_id: str) -> EmailMessage | None:
         """Get a single message by ID."""
         self.call_log.append(("get_message", message_id))
         if not self.initialized or self.should_fail:
             return None
         return self.messages.get(message_id)
 
-    def get_messages_for_training(self, limit: Optional[int] = None) -> List[EmailMessage]:
+    def get_messages_for_training(self, limit: int | None = None) -> list[EmailMessage]:
         """Get messages with user-reviewed labels for training."""
         self.call_log.append(("get_messages_for_training", limit))
         if not self.initialized or self.should_fail:
@@ -222,7 +220,7 @@ class MockDatabase(DatabaseInterface):
 
         return reviewed_messages
 
-    def get_messages_for_prediction(self, limit: Optional[int] = None) -> List[EmailMessage]:
+    def get_messages_for_prediction(self, limit: int | None = None) -> list[EmailMessage]:
         """Get unreviewed messages for prediction."""
         self.call_log.append(("get_messages_for_prediction", limit))
         if not self.initialized or self.should_fail:
@@ -237,7 +235,7 @@ class MockDatabase(DatabaseInterface):
 
         return unreviewed_messages
 
-    def get_unreviewed_messages(self, limit: int = 200) -> List[Tuple[str, str]]:
+    def get_unreviewed_messages(self, limit: int = 200) -> list[tuple[str, str]]:
         """Get unreviewed messages as (id, snippet) tuples for compatibility."""
         messages = self.get_messages_for_prediction(limit)
         return [(msg.id, msg.snippet or "") for msg in messages]
@@ -264,7 +262,7 @@ class MockDatabase(DatabaseInterface):
         self.predictions[message_id] = prediction
         return True
 
-    def get_training_stats(self) -> Dict[str, Any]:
+    def get_training_stats(self) -> dict[str, Any]:
         """Get training data statistics."""
         self.call_log.append(("get_training_stats",))
         if not self.initialized or self.should_fail:
@@ -295,7 +293,7 @@ class MockDatabase(DatabaseInterface):
             # Update the message labels to include the review label
             message.labels = [review_label]
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all database calls made."""
         return self.call_log.copy()
 
@@ -314,8 +312,8 @@ class MockFileSystem(FileSystemInterface):
     """Mock file system for testing."""
 
     def __init__(self):
-        self.files: Dict[str, str] = {}  # path -> content
-        self.binary_files: Dict[str, bytes] = {}  # path -> binary content
+        self.files: dict[str, str] = {}  # path -> content
+        self.binary_files: dict[str, bytes] = {}  # path -> binary content
         self.call_log = []
         self.should_fail = False
 
@@ -372,7 +370,7 @@ class MockFileSystem(FileSystemInterface):
         # Mock implementation - just return True
         return True
 
-    def list_files(self, directory: str, pattern: Optional[str] = None) -> List[str]:
+    def list_files(self, directory: str, pattern: str | None = None) -> list[str]:
         """List files in directory matching pattern."""
         self.call_log.append(("list_files", directory, pattern))
         if self.should_fail:
@@ -416,7 +414,7 @@ class MockFileSystem(FileSystemInterface):
         """Add a test binary file."""
         self.binary_files[path] = content
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all file system calls made."""
         return self.call_log.copy()
 
@@ -471,7 +469,7 @@ class MockModel(ModelInterface):
         return True
 
     def train(
-        self, training_data: List[Tuple[str, str]], epochs: int = 6, batch_size: int = 64
+        self, training_data: list[tuple[str, str]], epochs: int = 6, batch_size: int = 64
     ) -> TrainingMetrics:
         """Train model on labeled data."""
         self.call_log.append(("train", len(training_data), epochs, batch_size))
@@ -517,12 +515,12 @@ class MockModel(ModelInterface):
             features_used=["mock_default"],
         )
 
-    def predict_batch(self, texts: List[str]) -> List[PredictionResult]:
+    def predict_batch(self, texts: list[str]) -> list[PredictionResult]:
         """Predict labels for multiple texts."""
         self.call_log.append(("predict_batch", len(texts)))
         return [self.predict(text) for text in texts]
 
-    def get_model_info(self) -> Dict[str, Any]:
+    def get_model_info(self) -> dict[str, Any]:
         """Get model metadata and performance info."""
         self.call_log.append(("get_model_info",))
         return {
@@ -542,11 +540,11 @@ class MockModel(ModelInterface):
         """Control whether operations should fail."""
         self.should_fail = should_fail
 
-    def set_prediction_map(self, prediction_map: Dict[str, Tuple[str, float]]):
+    def set_prediction_map(self, prediction_map: dict[str, tuple[str, float]]):
         """Set custom prediction mapping for testing."""
         self.prediction_map = prediction_map
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all model calls made."""
         return self.call_log.copy()
 
@@ -562,7 +560,7 @@ class MockTextProcessor(TextProcessorInterface):
         self.call_log = []
         self.should_fail = False
 
-    def extract_features(self, text: str) -> Dict[str, Any]:
+    def extract_features(self, text: str) -> dict[str, Any]:
         """Extract features from text."""
         self.call_log.append(("extract_features", len(text)))
         if self.should_fail:
@@ -605,7 +603,7 @@ class MockTextProcessor(TextProcessorInterface):
         """Control whether operations should fail."""
         self.should_fail = should_fail
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all text processing calls made."""
         return self.call_log.copy()
 
@@ -646,7 +644,7 @@ class MockConfiguration(ConfigurationInterface):
         self.call_log.append(("reload",))
         # Mock reload - no-op for testing
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate configuration and return errors."""
         self.call_log.append(("validate",))
         if self.should_fail:
@@ -658,11 +656,11 @@ class MockConfiguration(ConfigurationInterface):
         """Control whether operations should fail."""
         self.should_fail = should_fail
 
-    def set_config_data(self, config_data: Dict[str, Any]):
+    def set_config_data(self, config_data: dict[str, Any]):
         """Set custom configuration data for testing."""
         self.config_data = config_data
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all configuration calls made."""
         return self.call_log.copy()
 
@@ -710,7 +708,7 @@ class MockLogger(LoggerInterface):
             self.call_log.append(("critical", message))
 
     # Test helper methods
-    def get_logs(self, level: Optional[str] = None) -> List[Tuple]:
+    def get_logs(self, level: str | None = None) -> list[tuple]:
         """Get all logged messages, optionally filtered by level."""
         with self._lock:
             if level:
@@ -723,7 +721,7 @@ class MockLogger(LoggerInterface):
             self.logs.clear()
             self.call_log.clear()
 
-    def get_call_log(self) -> List[Tuple]:
+    def get_call_log(self) -> list[tuple]:
         """Get log of all logging calls made."""
         with self._lock:
             return self.call_log.copy()

@@ -10,7 +10,6 @@ import sys
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import random
 
 from data_store import Message, Session, init_db
 from model import predict
@@ -188,8 +187,8 @@ def analyze_misclassifications():
             print(
                 f"• Add more training data for: {', '.join([cat for cat, _ in top_error_categories])}"
             )
-            print(f"• Review and correct misclassified emails in these categories")
-            print(f"• Consider merging similar categories that are often confused")
+            print("• Review and correct misclassified emails in these categories")
+            print("• Consider merging similar categories that are often confused")
 
             if len(confusion_pairs) > 0:
                 top_confusion = sorted_pairs[0]

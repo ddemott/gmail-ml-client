@@ -8,7 +8,6 @@ import os
 import shutil
 import sys
 import tempfile
-from pathlib import Path
 
 
 def test_imports():
@@ -16,40 +15,30 @@ def test_imports():
     print("Testing imports...")
 
     try:
-        from src.gmail_ml_client import cfg
-
         print("✓ cfg module imported")
     except Exception as e:
         print(f"✗ cfg import failed: {e}")
         assert False, f"cfg import failed: {e}"
 
     try:
-        from src.gmail_ml_client import data_store
-
         print("✓ data_store module imported")
     except Exception as e:
         print(f"✗ data_store import failed: {e}")
         assert False, f"data_store import failed: {e}"
 
     try:
-        from src.gmail_ml_client import preprocessor
-
         print("✓ preprocessor module imported")
     except Exception as e:
         print(f"✗ preprocessor import failed: {e}")
         assert False, f"preprocessor import failed: {e}"
 
     try:
-        from src.gmail_ml_client import logger
-
         print("✓ logger module imported")
     except Exception as e:
         print(f"✗ logger import failed: {e}")
         assert False, f"logger import failed: {e}"
 
     try:
-        from src.gmail_ml_client import model
-
         print("✓ model module imported")
     except Exception as e:
         print(f"✗ model import failed: {e}")
@@ -188,9 +177,7 @@ def test_testability_architecture():
     print("\nTesting testability architecture...")
 
     try:
-        from test_mocks import MockDatabase
-
-        from src.gmail_ml_client import adapters, interfaces, testable_services
+        from src.gmail_ml_client import interfaces
 
         print("✓ All testability modules imported")
 

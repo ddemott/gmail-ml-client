@@ -86,7 +86,7 @@ def main():
         print(f"📊 Found {len(useful_folders)} useful folders and {len(spam_folders)} spam folders")
 
         # Train on useful folders first with MUCH HIGHER LIMITS
-        print(f"\n🎯 Phase 1: Training on Useful Categories (MAXIMUM DATA)")
+        print("\n🎯 Phase 1: Training on Useful Categories (MAXIMUM DATA)")
         print("=" * 60)
 
         total_processed = 0
@@ -113,7 +113,7 @@ def main():
             messages = list_messages(label_ids=[label_id], max_results=max_messages)
 
             if not messages:
-                print(f"   ⚠️  No messages found")
+                print("   ⚠️  No messages found")
                 continue
 
             print(f"   📧 Found {len(messages)} messages (limit: {max_messages}), processing...")
@@ -174,7 +174,7 @@ def main():
                 session.close()
 
         # Train on SPAM last with MAXIMUM SPAM DATA
-        print(f"\n🎯 Phase 2: Training on SPAM (MAXIMUM SPAM DATA)")
+        print("\n🎯 Phase 2: Training on SPAM (MAXIMUM SPAM DATA)")
         print("=" * 60)
 
         for spam_label in spam_folders:
@@ -188,7 +188,7 @@ def main():
             messages = list_messages(label_ids=[label_id], max_results=max_spam_messages)
 
             if not messages:
-                print(f"   ⚠️  No messages found")
+                print("   ⚠️  No messages found")
                 continue
 
             print(
@@ -250,26 +250,26 @@ def main():
             finally:
                 session.close()
 
-        print(f"\n📊 MAXIMUM DATA TRAINING SUMMARY:")
+        print("\n📊 MAXIMUM DATA TRAINING SUMMARY:")
         print("=" * 60)
         print(f"Total messages processed: {total_processed}")
-        print(f"✅ Job folder: Up to 200 messages")
-        print(f"✅ Priority folders: Up to 150 messages each")
-        print(f"✅ Gmail folders: Up to 100 messages each")
-        print(f"✅ SPAM folder: Up to 500 messages")
-        print(f"✅ SPAM trained last to eliminate false positives")
+        print("✅ Job folder: Up to 200 messages")
+        print("✅ Priority folders: Up to 150 messages each")
+        print("✅ Gmail folders: Up to 100 messages each")
+        print("✅ SPAM folder: Up to 500 messages")
+        print("✅ SPAM trained last to eliminate false positives")
 
         if total_processed > 0:
-            print(f"\n🤖 Training model with MAXIMUM dataset...")
+            print("\n🤖 Training model with MAXIMUM dataset...")
             simple_train()
 
-            print(f"\n🎉 MAXIMUM DATA SUCCESS!")
+            print("\n🎉 MAXIMUM DATA SUCCESS!")
             print("=" * 50)
             print("✅ Model trained with MAXIMUM possible data")
             print("✅ Should achieve highest possible accuracy")
             print("✅ Ready for ultimate email classification")
 
-            print(f"\n📈 EXPECTED IMPROVEMENTS:")
+            print("\n📈 EXPECTED IMPROVEMENTS:")
             print("• Much more training data per category")
             print("• Better pattern recognition")
             print("• Higher accuracy on edge cases")

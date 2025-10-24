@@ -44,7 +44,7 @@ def quick_fix():
                     idx = int(choice) - 1
                     if 0 <= idx < len(messages):
                         selected_msg = messages[idx]
-                        new_label = input(f"Enter new label for this email: ").strip()
+                        new_label = input("Enter new label for this email: ").strip()
 
                         if new_label:
                             selected_msg.gold_label = new_label
@@ -59,12 +59,12 @@ def quick_fix():
 
             if message:
                 snippet = message.text[:100].replace("\n", " ") + "..."
-                print(f"\nFound email:")
+                print("\nFound email:")
                 print(f"ID: {message.id}")
                 print(f"Current label: {message.gold_label}")
                 print(f"Text: {snippet}")
 
-                new_label = input(f"\nEnter new label: ").strip()
+                new_label = input("\nEnter new label: ").strip()
 
                 if new_label:
                     message.gold_label = new_label

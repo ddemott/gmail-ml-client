@@ -55,7 +55,7 @@ def train_from_gmail_folders(target_labels=None, emails_per_folder=10):
             message_ids = list_messages(query=query, max_results=emails_per_folder)
 
             if not message_ids:
-                print(f"   📧 No messages found in this folder")
+                print("   📧 No messages found in this folder")
                 continue
 
             print(f"   📧 Found {len(message_ids)} messages")
@@ -99,7 +99,7 @@ def train_from_gmail_folders(target_labels=None, emails_per_folder=10):
             continue
 
     # Show training summary
-    print(f"\n📊 Training Data Summary:")
+    print("\n📊 Training Data Summary:")
     print("=" * 40)
     total_samples = sum(training_stats.values())
 
@@ -127,7 +127,7 @@ def suggest_priority_folders():
         "[Gmail]/Microsoft",
     ]
 
-    print(f"💡 Suggested Priority Folders:")
+    print("💡 Suggested Priority Folders:")
     for i, folder in enumerate(priority_folders, 1):
         print(f"   {i:2d}. {folder}")
 
@@ -155,7 +155,7 @@ def main():
         stats = train_from_gmail_folders(target_labels=priority_folders, emails_per_folder=8)
 
     elif choice == "2":
-        print(f"\n🚀 Training on ALL folders (this will take a while)...")
+        print("\n🚀 Training on ALL folders (this will take a while)...")
         stats = train_from_gmail_folders(emails_per_folder=5)
 
     elif choice == "3":
@@ -172,7 +172,7 @@ def main():
         all_labels = get_labels()
         user_labels = [l for l in all_labels if l.get("type") == "user"]
 
-        print(f"\n📋 Your Available Gmail Folders:")
+        print("\n📋 Your Available Gmail Folders:")
         for i, label in enumerate(sorted(user_labels, key=lambda x: x.get("name")), 1):
             print(f"   {i:2d}. {label.get('name')}")
 
@@ -184,19 +184,19 @@ def main():
 
     # After training data collection, offer to train the model
     if "stats" in locals() and stats:
-        print(f"\n🤖 Ready to train the model!")
+        print("\n🤖 Ready to train the model!")
         train_now = input("Train the model now? (y/n): ").strip().lower()
 
         if train_now == "y":
-            print(f"\n🔄 Training model...")
+            print("\n🔄 Training model...")
             import subprocess
 
             result = subprocess.run([".venv\\Scripts\\python.exe", "simple_train.py"])
 
             if result.returncode == 0:
-                print(f"\n🎉 Training completed! Your model now knows your folder organization.")
+                print("\n🎉 Training completed! Your model now knows your folder organization.")
             else:
-                print(f"\n⚠️  Training had issues. Run 'python simple_train.py' manually.")
+                print("\n⚠️  Training had issues. Run 'python simple_train.py' manually.")
 
 
 if __name__ == "__main__":

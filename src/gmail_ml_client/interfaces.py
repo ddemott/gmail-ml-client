@@ -6,7 +6,7 @@ Separates business logic from external systems (Gmail API, database, file system
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 # Data Transfer Objects for clean interface boundaries
@@ -18,10 +18,10 @@ class EmailMessage:
     subject: str
     sender: str
     body: str
-    labels: List[str]
+    labels: list[str]
     timestamp: datetime
-    thread_id: Optional[str] = None
-    snippet: Optional[str] = None
+    thread_id: str | None = None
+    snippet: str | None = None
 
 
 @dataclass
@@ -31,8 +31,8 @@ class LabelInfo:
     id: str
     name: str
     type: str
-    messages_total: Optional[int] = None
-    messages_unread: Optional[int] = None
+    messages_total: int | None = None
+    messages_unread: int | None = None
 
 
 @dataclass
@@ -41,8 +41,8 @@ class PredictionResult:
 
     predicted_label: str
     confidence: float
-    alternatives: List[Tuple[str, float]]
-    features_used: List[str]
+    alternatives: list[tuple[str, float]]
+    features_used: list[str]
 
 
 @dataclass
@@ -50,10 +50,10 @@ class TrainingMetrics:
     """Training performance metrics."""
 
     accuracy: float
-    precision: Dict[str, float]
-    recall: Dict[str, float]
-    f1_score: Dict[str, float]
-    confusion_matrix: List[List[int]]
+    precision: dict[str, float]
+    recall: dict[str, float]
+    f1_score: dict[str, float]
+    confusion_matrix: list[list[int]]
 
 
 # Abstract Interfaces for External Dependencies
@@ -66,7 +66,7 @@ class GmailApiInterface(ABC):
         pass
 
     @abstractmethod
-    def get_labels(self) -> List[LabelInfo]:
+    def get_labels(self) -> list[LabelInfo]:
         """Get all Gmail labels."""
         pass
 
@@ -76,7 +76,7 @@ class GmailApiInterface(ABC):
         pass
 
     @abstractmethod
-    def list_messages(self, query: Optional[str] = None, max_results: int = 100) -> List[str]:
+    def list_messages(self, query: str | None = None, max_results: int = 100) -> list[str]:
         """List message IDs matching query."""
         pass
 
@@ -87,7 +87,7 @@ class GmailApiInterface(ABC):
 
     @abstractmethod
     def modify_message_labels(
-        self, message_id: str, add_labels: List[str], remove_labels: List[str]
+        self, message_id: str, add_labels: list[str], remove_labels: list[str]
     ) -> bool:
         """Modify message labels."""
         pass
@@ -98,7 +98,7 @@ class GmailApiInterface(ABC):
         pass
 
     @abstractmethod
-    def get_rate_limit_status(self) -> Dict[str, Any]:
+    def get_rate_limit_status(self) -> dict[str, Any]:
         """Get current rate limit status."""
         pass
 
@@ -112,22 +112,22 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def store_messages(self, messages: List[EmailMessage]) -> int:
+    def store_messages(self, messages: list[EmailMessage]) -> int:
         """Store messages and return count of successfully stored."""
         pass
 
     @abstractmethod
-    def get_message(self, message_id: str) -> Optional[EmailMessage]:
+    def get_message(self, message_id: str) -> EmailMessage | None:
         """Get a single message by ID."""
         pass
 
     @abstractmethod
-    def get_messages_for_training(self, limit: Optional[int] = None) -> List[EmailMessage]:
+    def get_messages_for_training(self, limit: int | None = None) -> list[EmailMessage]:
         """Get messages with user-reviewed labels for training."""
         pass
 
     @abstractmethod
-    def get_messages_for_prediction(self, limit: Optional[int] = None) -> List[EmailMessage]:
+    def get_messages_for_prediction(self, limit: int | None = None) -> list[EmailMessage]:
         """Get unreviewed messages for prediction."""
         pass
 
@@ -142,7 +142,7 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def get_training_stats(self) -> Dict[str, Any]:
+    def get_training_stats(self) -> dict[str, Any]:
         """Get training data statistics."""
         pass
 
@@ -181,7 +181,7 @@ class FileSystemInterface(ABC):
         pass
 
     @abstractmethod
-    def list_files(self, directory: str, pattern: Optional[str] = None) -> List[str]:
+    def list_files(self, directory: str, pattern: str | None = None) -> list[str]:
         """List files in directory matching pattern."""
         pass
 
@@ -211,7 +211,7 @@ class ModelInterface(ABC):
 
     @abstractmethod
     def train(
-        self, training_data: List[Tuple[str, str]], epochs: int = 6, batch_size: int = 64
+        self, training_data: list[tuple[str, str]], epochs: int = 6, batch_size: int = 64
     ) -> TrainingMetrics:
         """Train model on labeled data."""
         pass
@@ -222,12 +222,12 @@ class ModelInterface(ABC):
         pass
 
     @abstractmethod
-    def predict_batch(self, texts: List[str]) -> List[PredictionResult]:
+    def predict_batch(self, texts: list[str]) -> list[PredictionResult]:
         """Predict labels for multiple texts."""
         pass
 
     @abstractmethod
-    def get_model_info(self) -> Dict[str, Any]:
+    def get_model_info(self) -> dict[str, Any]:
         """Get model metadata and performance info."""
         pass
 
@@ -241,7 +241,7 @@ class TextProcessorInterface(ABC):
     """Abstract interface for text processing operations."""
 
     @abstractmethod
-    def extract_features(self, text: str) -> Dict[str, Any]:
+    def extract_features(self, text: str) -> dict[str, Any]:
         """Extract features from text."""
         pass
 
@@ -280,7 +280,7 @@ class ConfigurationInterface(ABC):
         pass
 
     @abstractmethod
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate configuration and return errors."""
         pass
 
@@ -319,8 +319,8 @@ class DependencyContainer:
     """Container for managing dependencies and enabling dependency injection."""
 
     def __init__(self):
-        self._dependencies: Dict[str, Any] = {}
-        self._singletons: Dict[str, Any] = {}
+        self._dependencies: dict[str, Any] = {}
+        self._singletons: dict[str, Any] = {}
 
     def register(self, interface_name: str, implementation: Any, singleton: bool = True) -> None:
         """Register an implementation for an interface."""

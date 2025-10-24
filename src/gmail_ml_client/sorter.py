@@ -1,12 +1,6 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
-from .cfg import (
-    DEFAULT_TARGET_LABELS,
-    RULES_EXCLUDE,
-    RULES_INCLUDE,
-    SYSTEM_LABELS,
-    THRESHOLDS,
-)
+from .cfg import DEFAULT_TARGET_LABELS, RULES_EXCLUDE, RULES_INCLUDE, THRESHOLDS
 from .data_store import fetch_for_prediction, save_prediction
 from .model import predict
 
@@ -30,14 +24,14 @@ def suggest_label(text: str, model_label: str) -> str:
     return model_label
 
 
-def propose(limit: int = 100) -> List[Dict[str, Any]]:
+def propose(limit: int = 100) -> list[dict[str, Any]]:
     rows = fetch_for_prediction(limit=limit)
     if not rows:
         return []
     texts = [r.text for r in rows]
     labels, conf, spam_scores = predict(texts)
     actions = []
-    for r, lab, c, sp in zip(rows, labels, conf, spam_scores):
+    for r, lab, c, sp in zip(rows, labels, conf, spam_scores, strict=False):
         target = None
         action = "review"
         if sp >= THRESHOLDS["spam"]:

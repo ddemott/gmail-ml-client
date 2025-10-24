@@ -24,11 +24,11 @@ def quick_sync():
         from collections import Counter
 
         label_counts = Counter(labels)
-        print(f"🏷️  Current labels:")
+        print("🏷️  Current labels:")
         for label, count in label_counts.most_common():
             print(f"   {label}: {count}")
 
-    print(f"\n📧 Syncing 20 recent emails...")
+    print("\n📧 Syncing 20 recent emails...")
 
     try:
         # Get recent messages
@@ -50,11 +50,11 @@ def quick_sync():
                 continue
 
         print(f"\n🎉 Synced {synced} new emails!")
-        print(f"\n💡 Next: Label these emails via the web interface:")
-        print(f"   1. python -m uvicorn api:app --host localhost --port 8000")
-        print(f"   2. Visit: http://localhost:8000/docs")
-        print(f"   3. Use your labels like: [Gmail]/Amazon, [Gmail]/Family")
-        print(f"   4. Then run: python simple_train.py")
+        print("\n💡 Next: Label these emails via the web interface:")
+        print("   1. python -m uvicorn api:app --host localhost --port 8000")
+        print("   2. Visit: http://localhost:8000/docs")
+        print("   3. Use your labels like: [Gmail]/Amazon, [Gmail]/Family")
+        print("   4. Then run: python simple_train.py")
 
     except Exception as e:
         print(f"❌ Sync failed: {e}")

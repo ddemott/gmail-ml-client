@@ -1,18 +1,4 @@
-import json
-import os
-import time
-from typing import Any, Dict, List, Optional, Tuple
-
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Float,
-    Integer,
-    String,
-    Text,
-    create_engine,
-)
+from sqlalchemy import Boolean, Column, DateTime, Float, String, Text, create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.sql import func
@@ -29,7 +15,6 @@ _current_db_path = None
 
 def get_db_path() -> str:
     """Get the current database path from config."""
-    from .cfg import DB_PATH
 
     return DB_PATH
 
@@ -109,7 +94,7 @@ def upsert_message(msg_id: str, snippet: str, text: str) -> None:
 
 
 def save_prediction(
-    msg_id: str, spam_score: float, label_guess: Optional[str], target_label: Optional[str]
+    msg_id: str, spam_score: float, label_guess: str | None, target_label: str | None
 ) -> None:
     """Save prediction results with error handling."""
     session = get_session()()
@@ -159,7 +144,7 @@ def mark_review(msg_id: str, gold_label: str) -> None:
         session.close()
 
 
-def fetch_for_training(limit: int = 2000) -> Tuple[List[str], List[str]]:
+def fetch_for_training(limit: int = 2000) -> tuple[list[str], list[str]]:
     """Fetch reviewed messages for training with error handling."""
     session = get_session()()
     try:
@@ -178,7 +163,7 @@ def fetch_for_training(limit: int = 2000) -> Tuple[List[str], List[str]]:
         session.close()
 
 
-def fetch_for_prediction(limit: int = 200) -> List[Message]:
+def fetch_for_prediction(limit: int = 200) -> list[Message]:
     """Fetch unreviewed messages for prediction with error handling."""
     session = get_session()()
     try:
@@ -195,13 +180,13 @@ def fetch_for_prediction(limit: int = 200) -> List[Message]:
         session.close()
 
 
-def get_unreviewed_messages(limit: int = 200) -> List[Tuple[str, str]]:
+def get_unreviewed_messages(limit: int = 200) -> list[tuple[str, str]]:
     """Get unreviewed messages as (id, snippet) tuples for compatibility."""
     messages = fetch_for_prediction(limit)
     return [(msg.id, msg.snippet or "") for msg in messages]
 
 
-def get_reviewed_messages() -> List[Tuple[str, str]]:
+def get_reviewed_messages() -> list[tuple[str, str]]:
     """Get reviewed messages as (id, label) tuples for compatibility."""
     session = get_session()()
     try:

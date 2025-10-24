@@ -5,7 +5,7 @@ Simple approach: Get recent emails and manually review/label them
 
 import time
 
-from data_store import fetch_for_training, init_db, mark_review, upsert_message
+from data_store import init_db, upsert_message
 from gmail_client import get_message, list_messages
 from preprocessor import extract_text
 
@@ -54,7 +54,7 @@ def sync_recent_emails_for_review(limit=50):
 
                     print(f"✅ Synced: {snippet[:50]}...")
                 else:
-                    print(f"⚠️  Skipped: Could not retrieve message")
+                    print("⚠️  Skipped: Could not retrieve message")
 
                 # Add delay to avoid rate limiting
                 time.sleep(0.2)
@@ -63,17 +63,17 @@ def sync_recent_emails_for_review(limit=50):
                 print(f"❌ Error processing message {msg_id}: {e}")
                 continue
 
-        print(f"\n🎉 Sync completed!")
+        print("\n🎉 Sync completed!")
         print(f"📊 Successfully synced: {synced_count}/{len(message_ids)} messages")
 
         # Show what needs review
-        print(f"📝 Messages synced and ready for review via API")
+        print("📝 Messages synced and ready for review via API")
 
-        print(f"\n💡 Next steps:")
-        print(f"   1. Start API server: python -m uvicorn api:app --host localhost --port 8000")
-        print(f"   2. Visit: http://localhost:8000/docs")
-        print(f"   3. Use /api/review to label emails with real message IDs")
-        print(f"   4. Label with your categories like: [Gmail]/Amazon, [Gmail]/Family, etc.")
+        print("\n💡 Next steps:")
+        print("   1. Start API server: python -m uvicorn api:app --host localhost --port 8000")
+        print("   2. Visit: http://localhost:8000/docs")
+        print("   3. Use /api/review to label emails with real message IDs")
+        print("   4. Label with your categories like: [Gmail]/Amazon, [Gmail]/Family, etc.")
 
         return True
 
@@ -91,19 +91,19 @@ def show_review_status():
         # Get already reviewed
         texts, labels = fetch_for_training()
 
-        print(f"\n📊 Current Status:")
+        print("\n📊 Current Status:")
         print(f"   ✅ Already reviewed: {len(texts)} emails")
-        print(f"   📝 Messages available for review")
+        print("   📝 Messages available for review")
 
         if texts:
             from collections import Counter
 
             label_counts = Counter(labels)
-            print(f"   🏷️  Current labels:")
+            print("   🏷️  Current labels:")
             for label, count in label_counts.most_common():
                 print(f"      {label}: {count} emails")
 
-        print(f"\n🎯 Goal: Review 10-20 emails per category")
+        print("\n🎯 Goal: Review 10-20 emails per category")
 
     except Exception as e:
         print(f"❌ Could not get status: {e}")
@@ -116,11 +116,11 @@ if __name__ == "__main__":
     # Show current status
     show_review_status()
 
-    print(f"\nOptions:")
-    print(f"1. Sync recent emails for review")
-    print(f"2. Show current status only")
+    print("\nOptions:")
+    print("1. Sync recent emails for review")
+    print("2. Show current status only")
 
-    choice = input(f"\nEnter choice (1-2): ").strip()
+    choice = input("\nEnter choice (1-2): ").strip()
 
     if choice == "1":
         # Sync recent emails
@@ -130,7 +130,7 @@ if __name__ == "__main__":
             show_review_status()
 
     elif choice == "2":
-        print(f"Current status shown above.")
+        print("Current status shown above.")
 
     else:
-        print(f"Invalid choice.")
+        print("Invalid choice.")

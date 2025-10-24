@@ -4,9 +4,6 @@ Tests the actual working components without mocking issues.
 """
 
 import os
-import shutil
-import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
@@ -22,8 +19,6 @@ class TestCLIBasics:
     def test_python_import_basic_modules(self):
         """Test that basic modules can be imported."""
         try:
-            from src.gmail_ml_client import cfg, data_store, logger, preprocessor
-
             assert True, "Basic modules imported successfully"
         except Exception as e:
             pytest.fail(f"Failed to import basic modules: {e}")
@@ -47,8 +42,6 @@ class TestCLIBasics:
 
     def test_database_basic_functionality(self):
         """Test basic database operations."""
-        import os
-        import tempfile
 
         from src.gmail_ml_client import data_store
 
@@ -152,7 +145,7 @@ class TestFileStructure:
         req_file = WORKSPACE_DIR / "config" / "requirements.txt"
         assert req_file.exists(), "requirements.txt does not exist"
 
-        with open(req_file, "r") as f:
+        with open(req_file) as f:
             content = f.read().strip()
             assert len(content) > 0, "requirements.txt is empty"
             assert "typer" in content, "typer not found in requirements"
@@ -164,7 +157,12 @@ class TestImportStructure:
 
     def test_import_core_modules(self):
         """Test importing core modules."""
-        modules_to_test = ["src.gmail_ml_client.cfg", "src.gmail_ml_client.data_store", "src.gmail_ml_client.preprocessor", "src.gmail_ml_client.logger"]
+        modules_to_test = [
+            "src.gmail_ml_client.cfg",
+            "src.gmail_ml_client.data_store",
+            "src.gmail_ml_client.preprocessor",
+            "src.gmail_ml_client.logger",
+        ]
 
         for module_name in modules_to_test:
             try:
@@ -174,7 +172,12 @@ class TestImportStructure:
 
     def test_import_testability_modules(self):
         """Test importing testability modules."""
-        testability_modules = ["src.gmail_ml_client.interfaces", "src.gmail_ml_client.adapters", "test_mocks", "src.gmail_ml_client.testable_services"]
+        testability_modules = [
+            "src.gmail_ml_client.interfaces",
+            "src.gmail_ml_client.adapters",
+            "test_mocks",
+            "src.gmail_ml_client.testable_services",
+        ]
 
         for module_name in testability_modules:
             try:
@@ -272,7 +275,7 @@ class TestDocumentation:
             if readme_path.exists():
                 readme_exists = True
                 # Check it has content
-                with open(readme_path, "r", encoding="utf-8") as f:
+                with open(readme_path, encoding="utf-8") as f:
                     content = f.read().strip()
                     assert len(content) > 50, f"{readme_name} exists but appears to be too short"
                 break
@@ -284,7 +287,7 @@ class TestDocumentation:
         summary_file = WORKSPACE_DIR / "docs" / "TESTABILITY_SUMMARY.md"
         assert summary_file.exists(), "TESTABILITY_SUMMARY.md does not exist"
 
-        with open(summary_file, "r", encoding="utf-8") as f:
+        with open(summary_file, encoding="utf-8") as f:
             content = f.read().strip()
             assert len(content) > 100, "TESTABILITY_SUMMARY.md exists but appears to be too short"
             assert (

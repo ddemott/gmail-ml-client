@@ -5,7 +5,6 @@ This will help the model learn to distinguish between spam and legitimate emails
 """
 
 import os
-import random
 import sys
 
 # Add the current directory to Python path
@@ -123,24 +122,24 @@ def main():
                     f"   🎉 Completed: {processed_count} SPAM messages processed from {label_name}"
                 )
 
-            print(f"\n📊 SPAM TRAINING SUMMARY:")
+            print("\n📊 SPAM TRAINING SUMMARY:")
             print("=" * 40)
             print(f"Total SPAM messages processed: {total_processed}")
 
             if total_processed > 0:
-                print(f"\n🤖 Training model with SPAM data...")
+                print("\n🤖 Training model with SPAM data...")
 
                 # Now train the model with all the data (including new spam data)
                 print("🔄 Starting enhanced training with SPAM detection...")
                 simple_train()
 
-                print(f"\n🎉 SUCCESS!")
+                print("\n🎉 SUCCESS!")
                 print("=" * 40)
                 print("✅ Model retrained with large SPAM dataset")
                 print("✅ Spam detection should be significantly improved")
                 print("✅ Model now knows patterns from your real spam emails")
 
-                print(f"\n📝 NEXT STEPS:")
+                print("\n📝 NEXT STEPS:")
                 print("• Test the improved model: python test_predictions.py")
                 print("• Check spam detection on new emails")
                 print("• The model should now better identify spam vs legitimate emails")

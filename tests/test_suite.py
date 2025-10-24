@@ -4,27 +4,13 @@ Demonstrates proper unit testing with mocked dependencies.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List
-from unittest.mock import Mock, patch
 
 import pytest
-from test_mocks import (
-    MockConfiguration,
-    MockDatabase,
-    MockFileSystem,
-    MockGmailApi,
-    MockLogger,
-    MockModel,
-    MockTextProcessor,
-)
 
 # Import our testable components
 from src.gmail_ml_client.interfaces import (
     EmailMessage,
     Interfaces,
-    LabelInfo,
-    PredictionResult,
-    TrainingMetrics,
     configure_dependencies_for_testing,
     get_dependency,
 )
@@ -32,7 +18,6 @@ from src.gmail_ml_client.testable_services import (
     ActionService,
     GmailService,
     PredictionService,
-    ServiceResult,
     TrainingService,
 )
 

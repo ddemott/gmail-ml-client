@@ -82,12 +82,12 @@ def main():
             except Exception as e:
                 print(f"{i:2d}. {label_name:<40} (Error: {str(e)})")
 
-        print(f"\n🔧 SYSTEM LABELS:")
+        print("\n🔧 SYSTEM LABELS:")
         print("-" * 50)
         for label in system_only:
             print(f"    {label['name']}")
 
-        print(f"\n💡 RECOMMENDATIONS:")
+        print("\n💡 RECOMMENDATIONS:")
         print("-" * 50)
         print("• For good training, aim for 20+ emails per category")
         print("• 50+ emails per category is ideal")
@@ -95,7 +95,7 @@ def main():
         print("• You can organize emails in Gmail web interface")
         print("• Apply labels to emails by selecting them and choosing a label")
 
-        print(f"\n📝 NEXT STEPS:")
+        print("\n📝 NEXT STEPS:")
         print("-" * 50)
         print("1. Go to Gmail web interface (gmail.com)")
         print("2. Search for emails you want to categorize")

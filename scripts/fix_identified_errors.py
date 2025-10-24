@@ -73,7 +73,7 @@ def fix_identified_errors():
                     print(f'   Text: "{snippet}"')
 
                 # Ask for confirmation
-                confirm = input(f"   Apply this fix? (y/N): ").strip().lower()
+                confirm = input("   Apply this fix? (y/N): ").strip().lower()
 
                 if confirm == "y":
                     email.target_label = fix["suggested"]
@@ -82,7 +82,7 @@ def fix_identified_errors():
                     fixed_count += 1
                     print(f"   ✅ Fixed: Changed to {fix['suggested']}")
                 else:
-                    print(f"   ⏭️  Skipped")
+                    print("   ⏭️  Skipped")
                 print()
             else:
                 print(f"{i}. Email ID {fix['id']} not found")
@@ -91,7 +91,7 @@ def fix_identified_errors():
         print(f"🎉 FIXES APPLIED: {fixed_count}/{len(fixes)}")
 
         if fixed_count > 0:
-            print(f"\n🤖 Consider retraining the model with these corrections:")
+            print("\n🤖 Consider retraining the model with these corrections:")
             print("python simple_train.py")
             print("\nThese fixes will help improve future classifications!")
 

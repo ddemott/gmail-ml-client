@@ -9,7 +9,6 @@ import sys
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import random
 
 from data_store import Message, Session, init_db
 from model import predict
@@ -47,7 +46,7 @@ def check_real_email_misclassifications():
 
         print(f"📊 Found {len(recent_emails)} recently auto-classified emails")
 
-        print(f"\n🤖 Re-checking classifications with current model...")
+        print("\n🤖 Re-checking classifications with current model...")
 
         mismatches = []
         total_checked = 0
@@ -80,7 +79,7 @@ def check_real_email_misclassifications():
                 continue
 
         # Show results
-        print(f"\n📊 REAL EMAIL CHECK RESULTS")
+        print("\n📊 REAL EMAIL CHECK RESULTS")
         print("=" * 40)
         print(f"Emails checked: {total_checked}")
         print(f"Consistent classifications: {total_checked - len(mismatches)}")
@@ -91,7 +90,7 @@ def check_real_email_misclassifications():
             print(f"Model consistency: {consistency:.1f}%")
 
         if mismatches:
-            print(f"\n❓ POTENTIAL MISCLASSIFICATIONS:")
+            print("\n❓ POTENTIAL MISCLASSIFICATIONS:")
             print("-" * 50)
 
             for i, mismatch in enumerate(mismatches, 1):
@@ -104,13 +103,13 @@ def check_real_email_misclassifications():
 
                 # Ask if user wants to correct this
                 if i <= 5:  # Only ask for first 5 to avoid overwhelming
-                    print(f"   Options:")
+                    print("   Options:")
                     print(f"   1. Keep stored classification ({mismatch['stored']})")
                     print(f"   2. Change to model prediction ({mismatch['predicted']})")
-                    print(f"   3. Change to different label")
-                    print(f"   4. Skip this email")
+                    print("   3. Change to different label")
+                    print("   4. Skip this email")
 
-                    choice = input(f"   Choose option (1-4): ").strip()
+                    choice = input("   Choose option (1-4): ").strip()
 
                     if choice == "2":
                         # Update to model prediction
@@ -123,7 +122,7 @@ def check_real_email_misclassifications():
 
                     elif choice == "3":
                         # Custom label
-                        new_label = input(f"   Enter new label: ").strip()
+                        new_label = input("   Enter new label: ").strip()
                         if new_label:
                             message = session.query(Message).filter_by(id=mismatch["id"]).first()
                             if message:
@@ -141,13 +140,13 @@ def check_real_email_misclassifications():
                             print(f"   ✅ Kept: {mismatch['stored']}")
 
                     else:
-                        print(f"   ⏭️  Skipped")
+                        print("   ⏭️  Skipped")
         else:
-            print(f"\n🎉 EXCELLENT! No misclassifications found!")
+            print("\n🎉 EXCELLENT! No misclassifications found!")
             print("Your model is performing consistently on real emails!")
 
         # Show some examples of good classifications
-        print(f"\n✅ EXAMPLES OF GOOD CLASSIFICATIONS:")
+        print("\n✅ EXAMPLES OF GOOD CLASSIFICATIONS:")
         print("-" * 40)
 
         good_examples = (
@@ -174,7 +173,7 @@ def check_real_email_misclassifications():
             except:
                 continue
 
-        print(f"\n🎯 SUMMARY:")
+        print("\n🎯 SUMMARY:")
         print("=" * 20)
         print("✅ Your Gmail ML Client is processing real emails")
         print("✅ Model consistency is being maintained")

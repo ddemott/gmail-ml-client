@@ -6,7 +6,6 @@ Specifically targets emails with confidence scores between spam and certain thre
 
 import os
 import sys
-from typing import Any, Dict, List
 
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -26,7 +25,9 @@ def review_low_confidence_emails(limit: int = 20) -> None:
     """
     print("🎯 Low Confidence Email Review Tool")
     print("=" * 60)
-    print(f"Reviewing emails with confidence: {THRESHOLDS['spam']:.2f} - {THRESHOLDS['certain']:.2f}")
+    print(
+        f"Reviewing emails with confidence: {THRESHOLDS['spam']:.2f} - {THRESHOLDS['certain']:.2f}"
+    )
     print("These emails need manual verification before auto-processing")
     print()
 
@@ -43,7 +44,7 @@ def review_low_confidence_emails(limit: int = 20) -> None:
                 Message.target_label.isnot(None),
                 Message.reviewed == False,
                 Message.text.isnot(None),
-                Message.label_guess.isnot(None)
+                Message.label_guess.isnot(None),
             )
             .order_by(Message.created_at.desc())
             .limit(limit * 2)  # Get more candidates to filter
@@ -64,16 +65,17 @@ def review_low_confidence_emails(limit: int = 20) -> None:
                 spam_score = spam_scores[0] if spam_scores else 0.5
 
                 # Low confidence = not certain but not obviously spam
-                if (conf < THRESHOLDS['certain'] and
-                    spam_score < THRESHOLDS['spam'] and
-                    conf > 0.1):  # Avoid completely uncertain predictions
-
-                    low_confidence_emails.append({
-                        "message": msg,
-                        "confidence": conf,
-                        "spam_score": spam_score,
-                        "predicted_label": predictions[0] if predictions else "UNKNOWN"
-                    })
+                if (
+                    conf < THRESHOLDS["certain"] and spam_score < THRESHOLDS["spam"] and conf > 0.1
+                ):  # Avoid completely uncertain predictions
+                    low_confidence_emails.append(
+                        {
+                            "message": msg,
+                            "confidence": conf,
+                            "spam_score": spam_score,
+                            "predicted_label": predictions[0] if predictions else "UNKNOWN",
+                        }
+                    )
 
             except Exception as e:
                 print(f"⚠️  Error predicting for message {msg.id}: {e}")
@@ -85,7 +87,7 @@ def review_low_confidence_emails(limit: int = 20) -> None:
             return
 
         # Sort by confidence (lowest first)
-        low_confidence_emails.sort(key=lambda x: x['confidence'])
+        low_confidence_emails.sort(key=lambda x: x["confidence"])
 
         print(f"📊 Found {len(low_confidence_emails)} low confidence emails to review")
         print()
@@ -98,7 +100,7 @@ def review_low_confidence_emails(limit: int = 20) -> None:
             spam_score = candidate["spam_score"]
             predicted = candidate["predicted_label"]
 
-            print(f"\n" + "=" * 70)
+            print("\n" + "=" * 70)
             print(f"📧 LOW CONFIDENCE EMAIL {i}/{len(low_confidence_emails)}")
             print(f"ID: {msg.id}")
             print(f"Predicted: {predicted}")
@@ -119,7 +121,7 @@ def review_low_confidence_emails(limit: int = 20) -> None:
                 # Look for subject-like content
                 subject_candidates = []
                 for line in lines[:5]:  # Check first few lines
-                    if len(line) < 100 and not line.startswith("http") and not "@" in line:
+                    if len(line) < 100 and not line.startswith("http") and "@" not in line:
                         subject_candidates.append(line)
 
                 if subject_candidates:
@@ -136,7 +138,7 @@ def review_low_confidence_emails(limit: int = 20) -> None:
             print("q. Quit review")
 
             while True:
-                choice = input(f"\nChoose action (1-5, q): ").strip().lower()
+                choice = input("\nChoose action (1-5, q): ").strip().lower()
 
                 if choice == "1":
                     # Accept the prediction
@@ -184,7 +186,9 @@ def review_low_confidence_emails(limit: int = 20) -> None:
                         content = msg.text.replace("\r", "").strip()
                         print(content[:1500])  # Show up to 1500 characters
                         if len(content) > 1500:
-                            print("... (truncated - use 'interactive_email_review.py' for full content)")
+                            print(
+                                "... (truncated - use 'interactive_email_review.py' for full content)"
+                            )
                     print("-" * 50)
 
                 elif choice == "5":
@@ -203,19 +207,19 @@ def review_low_confidence_emails(limit: int = 20) -> None:
             if choice == "q":
                 break
 
-        print(f"\n🎉 REVIEW COMPLETE!")
+        print("\n🎉 REVIEW COMPLETE!")
         print("=" * 40)
         print(f"Low confidence emails reviewed: {reviewed_count}")
         print(f"Total processed: {i}")
 
         if reviewed_count > 0:
-            print(f"\n🤖 Next Steps:")
+            print("\n🤖 Next Steps:")
             print("• Retrain model with corrections:")
             print("  python simple_train.py")
             print("• Your reviews improve future accuracy!")
 
     except KeyboardInterrupt:
-        print(f"\n\n👋 Review interrupted. Saving changes...")
+        print("\n\n👋 Review interrupted. Saving changes...")
         session.commit()
 
     finally:
@@ -226,8 +230,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Review low confidence emails")
-    parser.add_argument("--limit", type=int, default=20,
-                       help="Maximum emails to review (default: 20)")
+    parser.add_argument(
+        "--limit", type=int, default=20, help="Maximum emails to review (default: 20)"
+    )
 
     args = parser.parse_args()
     review_low_confidence_emails(limit=args.limit)

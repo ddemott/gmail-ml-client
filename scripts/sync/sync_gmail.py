@@ -3,7 +3,6 @@
 Sync Gmail emails directly
 """
 
-from cfg import SYNC_PAGE_SIZE
 from data_store import init_db, upsert_message
 from gmail_client import get_message, list_messages
 from logger import logger
@@ -55,9 +54,9 @@ def sync_gmail_emails(limit=50):
                 print(f"❌ Error syncing message {msg_id}: {e}")
                 continue
 
-        print(f"\n🎉 Gmail sync completed!")
+        print("\n🎉 Gmail sync completed!")
         print(f"📊 Successfully synced: {synced_count}/{len(message_ids)} messages")
-        print(f"📝 Messages are now available for review and labeling")
+        print("📝 Messages are now available for review and labeling")
 
         return True
 
@@ -78,7 +77,7 @@ def show_sync_stats():
         # Get already reviewed
         texts, labels = fetch_for_training()
 
-        print(f"\n📊 Current Status:")
+        print("\n📊 Current Status:")
         print(f"   📝 Messages needing review: {len(pending)}")
         print(f"   ✅ Already reviewed: {len(texts)}")
 
@@ -86,7 +85,7 @@ def show_sync_stats():
             from collections import Counter
 
             label_counts = Counter(labels)
-            print(f"   🏷️  Label distribution:")
+            print("   🏷️  Label distribution:")
             for label, count in label_counts.items():
                 print(f"      {label}: {count}")
 
@@ -105,9 +104,9 @@ if __name__ == "__main__":
         # Show stats
         show_sync_stats()
 
-        print(f"\n🎯 Next Steps:")
-        print(f"   1. Review emails: Use API at http://localhost:8000/docs")
-        print(f"   2. Label emails as: Work, Personal, SPAM, Newsletter")
-        print(f"   3. Retrain model: python simple_train.py")
+        print("\n🎯 Next Steps:")
+        print("   1. Review emails: Use API at http://localhost:8000/docs")
+        print("   2. Label emails as: Work, Personal, SPAM, Newsletter")
+        print("   3. Retrain model: python simple_train.py")
     else:
-        print(f"\n❌ Sync failed. Check your Gmail authentication.")
+        print("\n❌ Sync failed. Check your Gmail authentication.")

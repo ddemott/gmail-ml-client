@@ -3,13 +3,12 @@ End-to-end tests for Gmail ML Client CLI interface.
 These tests verify the complete CLI workflows work correctly.
 """
 
-import json
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 from typer.testing import CliRunner

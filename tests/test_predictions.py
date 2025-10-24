@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import random
 
-from src.gmail_ml_client.gmail_client import get_labels, get_message, list_messages
+from src.gmail_ml_client.gmail_client import get_message, list_messages
 from src.gmail_ml_client.model import load, predict
 from src.gmail_ml_client.preprocessor import extract_text
 
@@ -34,7 +34,7 @@ def main():
             print("Make sure you've trained the model first with: python train_from_folders.py")
             return
 
-        print(f"\n🔍 Getting recent emails from your inbox...")
+        print("\n🔍 Getting recent emails from your inbox...")
 
         # Get some recent messages from inbox
         messages = list_messages(max_results=20)

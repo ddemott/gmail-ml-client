@@ -1,23 +1,23 @@
 import base64
 import re
-from typing import Any, Dict
+from typing import Any
 
 
-def _decode_body(payload_part: Dict[str, Any]) -> str:
+def _decode_body(payload_part: dict[str, Any]) -> str:
     data = payload_part.get("body", {}).get("data")
     if not data:
         return ""
     return base64.urlsafe_b64decode(data.encode("UTF-8")).decode("UTF-8", errors="ignore")
 
 
-def extract_text(msg: Dict[str, Any]) -> str:
+def extract_text(msg: dict[str, Any]) -> str:
     headers = {h["name"].lower(): h["value"] for h in msg.get("payload", {}).get("headers", [])}
     subject = headers.get("subject", "")
 
     payload = msg.get("payload", {})
     body_text = ""
 
-    def walk(p: Dict[str, Any]) -> None:
+    def walk(p: dict[str, Any]) -> None:
         nonlocal body_text
         mime = p.get("mimeType", "")
         if "text/plain" in mime and p.get("body", {}).get("data"):

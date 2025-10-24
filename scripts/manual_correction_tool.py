@@ -153,7 +153,7 @@ def search_by_text(session):
         # Ask if user wants to change this email's label
         change = input(f"   Change label for email {i}? (y/N): ").strip().lower()
         if change == "y":
-            new_label = input(f"   Enter new label: ").strip()
+            new_label = input("   Enter new label: ").strip()
             if new_label:
                 msg.gold_label = new_label
                 msg.target_label = new_label
@@ -200,7 +200,7 @@ def search_by_label(session):
         # Ask if user wants to change this email's label
         change = input(f"   Change label for email {i}? (y/N): ").strip().lower()
         if change == "y":
-            new_label = input(f"   Enter new label: ").strip()
+            new_label = input("   Enter new label: ").strip()
             if new_label:
                 msg.gold_label = new_label
                 msg.target_label = new_label

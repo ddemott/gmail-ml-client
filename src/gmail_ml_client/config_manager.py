@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from .logger import logger
 
@@ -29,7 +29,7 @@ class ThresholdConfig:
     spam: float = 0.85
     certain: float = 0.92
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate threshold configuration."""
         errors = []
         if not (0.0 <= self.spam <= 1.0):
@@ -49,7 +49,7 @@ class DatabaseConfig:
     connection_pool_size: int = 10
     echo_sql: bool = False
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate database configuration."""
         errors = []
         if not self.path:
@@ -70,7 +70,7 @@ class ModelConfig:
     epochs: int = 6
     batch_size: int = 64
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate model configuration."""
         errors = []
         if not self.artifacts_dir:
@@ -94,7 +94,7 @@ class GmailConfig:
     rate_limit_per_second: int = 250
     rate_limit_per_day: int = 1000000000
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate Gmail configuration."""
         errors = []
         if not self.credentials_file:
@@ -117,7 +117,7 @@ class LoggingConfig:
     max_file_size: int = 10 * 1024 * 1024  # 10MB
     backup_count: int = 5
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate logging configuration."""
         errors = []
         valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -153,7 +153,7 @@ class LabelConfig:
         }
     )
     junk_labels: set = field(default_factory=lambda: {"Junk", "JUNK", "Bulk", "Promotions:Spammy"})
-    default_target_labels: List[str] = field(
+    default_target_labels: list[str] = field(
         default_factory=lambda: [
             "Work",
             "Personal",
@@ -165,7 +165,7 @@ class LabelConfig:
         ]
     )
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate label configuration."""
         errors = []
         conflicts = set(self.default_target_labels) & self.system_labels
@@ -178,7 +178,7 @@ class LabelConfig:
 class RulesConfig:
     """Configuration for classification rules."""
 
-    include_rules: Dict[str, List[str]] = field(
+    include_rules: dict[str, list[str]] = field(
         default_factory=lambda: {
             "Receipts": ["receipt", "invoice", "order", "transaction", "purchase", "payment"],
             "Finance": ["bank", "statement", "due", "bill", "credit card", "mortgage"],
@@ -188,13 +188,13 @@ class RulesConfig:
             "Updates": ["update", "policy", "terms", "what's new", "changelog"],
         }
     )
-    exclude_rules: Dict[str, List[str]] = field(
+    exclude_rules: dict[str, list[str]] = field(
         default_factory=lambda: {
             "Receipts": ["privacy policy", "terms of service"],
         }
     )
 
-    def validate(self, target_labels: List[str]) -> List[str]:
+    def validate(self, target_labels: list[str]) -> list[str]:
         """Validate rules configuration."""
         errors = []
         for label in self.include_rules:
@@ -219,7 +219,7 @@ class AppConfig:
     labels: LabelConfig = field(default_factory=LabelConfig)
     rules: RulesConfig = field(default_factory=RulesConfig)
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate entire configuration."""
         errors = []
         errors.extend(self.thresholds.validate())
@@ -236,7 +236,7 @@ class ConfigLoader(ABC):
     """Abstract base class for configuration loaders."""
 
     @abstractmethod
-    def load(self) -> Dict[str, Any]:
+    def load(self) -> dict[str, Any]:
         """Load configuration from source."""
         pass
 
@@ -247,14 +247,14 @@ class FileConfigLoader(ConfigLoader):
     def __init__(self, config_file: str):
         self.config_file = Path(config_file)
 
-    def load(self) -> Dict[str, Any]:
+    def load(self) -> dict[str, Any]:
         """Load configuration from file."""
         if not self.config_file.exists():
             logger.info(f"Config file {self.config_file} not found, using defaults")
             return {}
 
         try:
-            with open(self.config_file, "r") as f:
+            with open(self.config_file) as f:
                 if self.config_file.suffix.lower() == ".json":
                     return json.load(f)
                 else:
@@ -271,7 +271,7 @@ class EnvironmentConfigLoader(ConfigLoader):
     def __init__(self, prefix: str = "GMAIL_ML_"):
         self.prefix = prefix
 
-    def load(self) -> Dict[str, Any]:
+    def load(self) -> dict[str, Any]:
         """Load configuration from environment variables."""
         config = {}
         for key, value in os.environ.items():
@@ -296,8 +296,8 @@ class ConfigurationManager:
     """Manages application configuration with multiple sources and validation."""
 
     def __init__(self):
-        self._config: Optional[AppConfig] = None
-        self._loaders: List[ConfigLoader] = []
+        self._config: AppConfig | None = None
+        self._loaders: list[ConfigLoader] = []
 
     def add_loader(self, loader: ConfigLoader) -> None:
         """Add a configuration loader."""
@@ -330,7 +330,7 @@ class ConfigurationManager:
         )
         return self._config
 
-    def _create_config_from_dict(self, config_dict: Dict[str, Any]) -> AppConfig:
+    def _create_config_from_dict(self, config_dict: dict[str, Any]) -> AppConfig:
         """Create AppConfig from dictionary with proper nesting."""
         # Extract environment
         env_str = config_dict.get("environment", "development")
@@ -417,7 +417,7 @@ def reload_config() -> AppConfig:
 
 
 # Backward compatibility functions (for existing code)
-def get_thresholds() -> Dict[str, float]:
+def get_thresholds() -> dict[str, float]:
     """Get decision thresholds (backward compatible)."""
     config = get_config()
     return {"spam": config.thresholds.spam, "certain": config.thresholds.certain}
@@ -428,17 +428,17 @@ def get_system_labels() -> set:
     return get_config().labels.system_labels
 
 
-def get_default_target_labels() -> List[str]:
+def get_default_target_labels() -> list[str]:
     """Get default target labels (backward compatible)."""
     return get_config().labels.default_target_labels
 
 
-def get_rules_include() -> Dict[str, List[str]]:
+def get_rules_include() -> dict[str, list[str]]:
     """Get include rules (backward compatible)."""
     return get_config().rules.include_rules
 
 
-def get_rules_exclude() -> Dict[str, List[str]]:
+def get_rules_exclude() -> dict[str, list[str]]:
     """Get exclude rules (backward compatible)."""
     return get_config().rules.exclude_rules
 

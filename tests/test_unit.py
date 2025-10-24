@@ -3,26 +3,15 @@ Unit tests for Gmail ML Client core components using mocks.
 These tests focus on testing business logic in isolation.
 """
 
-import os
 import tempfile
 from datetime import datetime
-from typing import Any, Dict, List
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import Mock, patch
 
 import pytest
 from test_mocks import MockDatabase
 
 # Import modules to test
-from src.gmail_ml_client import (
-    cfg,
-    data_store,
-    gmail_client,
-    model,
-    preprocessor,
-    sorter,
-    trainer,
-)
-from src.gmail_ml_client.logger import logger
+from src.gmail_ml_client import cfg, data_store, gmail_client, model, preprocessor, sorter, trainer
 
 
 class TestDataStore:
@@ -388,7 +377,6 @@ class TestModel:
         mock_encoder.classes_ = ["SPAM", "HAM"]
 
         with patch.object(model, "load", return_value=(mock_vectorizer, mock_encoder, mock_model)):
-
             result = model.predict(["test email text"])
 
             assert result is not None
@@ -472,7 +460,6 @@ class TestSorter:
 
 
 class TestTrainer:
-
     @patch("src.gmail_ml_client.trainer.train")
     @patch("src.gmail_ml_client.trainer.fetch_for_training")
     def test_train_from_feedback_success(self, mock_fetch_training, mock_train):

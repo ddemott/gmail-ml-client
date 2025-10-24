@@ -82,7 +82,7 @@ def train_from_existing_labels(target_labels=None, emails_per_label=15):
             continue
 
     # Show training data summary
-    print(f"\n📊 Training Data Summary:")
+    print("\n📊 Training Data Summary:")
     total_samples = 0
     for label, samples in training_data.items():
         count = len(samples)
@@ -92,10 +92,10 @@ def train_from_existing_labels(target_labels=None, emails_per_label=15):
     print(f"\n🎉 Total training samples: {total_samples}")
 
     if total_samples > 0:
-        print(f"\n🚀 Ready to train! Run: python simple_train.py")
+        print("\n🚀 Ready to train! Run: python simple_train.py")
         return True
     else:
-        print(f"\n❌ No training data collected. Check Gmail access.")
+        print("\n❌ No training data collected. Check Gmail access.")
         return False
 
 
@@ -115,7 +115,7 @@ def suggest_priority_labels():
         "[Gmail]/Auto Related",
     ]
 
-    print(f"\n💡 Suggested Priority Labels (start with these):")
+    print("\n💡 Suggested Priority Labels (start with these):")
     for i, label in enumerate(priority_suggestions, 1):
         print(f"   {i:2d}. {label}")
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         train_from_existing_labels(target_labels=priority_labels, emails_per_label=10)
 
     elif choice == "2":
-        print(f"\n🚀 Training on ALL labels (this may take a while)...")
+        print("\n🚀 Training on ALL labels (this may take a while)...")
         train_from_existing_labels(emails_per_label=5)
 
     elif choice == "3":

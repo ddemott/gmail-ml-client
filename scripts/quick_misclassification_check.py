@@ -10,7 +10,6 @@ import sys
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import random
 
 from data_store import Message, Session, init_db
 from model import predict
@@ -96,7 +95,7 @@ def quick_misclassification_analysis():
         # Show results
         accuracy = (total_correct / total_tested * 100) if total_tested > 0 else 0
 
-        print(f"\n📊 QUICK ANALYSIS RESULTS")
+        print("\n📊 QUICK ANALYSIS RESULTS")
         print("=" * 40)
         print(f"Sample size: {total_tested} emails")
         print(f"Correct: {total_correct}")
@@ -105,7 +104,7 @@ def quick_misclassification_analysis():
 
         # Show detailed misclassifications
         if misclassifications:
-            print(f"\n❌ MISCLASSIFICATION DETAILS")
+            print("\n❌ MISCLASSIFICATION DETAILS")
             print("=" * 40)
 
             for i, error in enumerate(misclassifications, 1):
@@ -114,7 +113,7 @@ def quick_misclassification_analysis():
                 print(f"   TEXT: \"{error['text_snippet']}...\"")
 
         # Show common confusion patterns
-        print(f"\n🔍 COMMON CONFUSION PATTERNS")
+        print("\n🔍 COMMON CONFUSION PATTERNS")
         print("=" * 40)
 
         confusion_patterns = {}
@@ -125,22 +124,22 @@ def quick_misclassification_analysis():
         for pattern, count in sorted(confusion_patterns.items(), key=lambda x: x[1], reverse=True):
             print(f"   {pattern}: {count} times")
 
-        print(f"\n💡 INTERPRETATION")
+        print("\n💡 INTERPRETATION")
         print("=" * 30)
         print("The 84.8% accuracy means:")
-        print(f"• Out of every 100 emails, ~85 are classified correctly")
-        print(f"• ~15 emails get put in the wrong folder")
-        print(f"• This is actually VERY GOOD for 54 different categories!")
-        print(f"• Most errors are between similar categories (jobs vs promotions)")
-        print(f"• SPAM detection is working perfectly (100% in tests)")
+        print("• Out of every 100 emails, ~85 are classified correctly")
+        print("• ~15 emails get put in the wrong folder")
+        print("• This is actually VERY GOOD for 54 different categories!")
+        print("• Most errors are between similar categories (jobs vs promotions)")
+        print("• SPAM detection is working perfectly (100% in tests)")
 
-        print(f"\n🎯 WHY MISCLASSIFICATIONS HAPPEN:")
+        print("\n🎯 WHY MISCLASSIFICATIONS HAPPEN:")
         print("• Job ads can look like promotions (both are marketing)")
         print("• Some emails have mixed content (personal + finance)")
         print("• Short emails lack distinguishing features")
         print("• Similar vocabulary between related categories")
 
-        print(f"\n✅ YOUR MODEL IS EXCELLENT!")
+        print("\n✅ YOUR MODEL IS EXCELLENT!")
         print("84.8% accuracy with 54 categories is outstanding!")
 
     finally:

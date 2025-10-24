@@ -4,22 +4,17 @@ These services demonstrate proper separation of concerns for maximum testability
 """
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from .interfaces import (
     ConfigurationInterface,
     DatabaseInterface,
-    EmailMessage,
     FileSystemInterface,
     GmailApiInterface,
     Interfaces,
-    LabelInfo,
     LoggerInterface,
     ModelInterface,
-    PredictionResult,
     TextProcessorInterface,
-    TrainingMetrics,
     inject_dependencies,
 )
 
@@ -31,7 +26,7 @@ class ServiceResult:
     success: bool
     data: Any = None
     message: str = ""
-    errors: Optional[List[str]] = None
+    errors: list[str] | None = None
 
     def __post_init__(self) -> None:
         if self.errors is None:
@@ -43,7 +38,7 @@ class ServiceResult:
         return cls(success=True, data=data, message=message)
 
     @classmethod
-    def error_result(cls, message: str, errors: Optional[List[str]] = None) -> "ServiceResult":
+    def error_result(cls, message: str, errors: list[str] | None = None) -> "ServiceResult":
         """Create an error result."""
         return cls(success=False, message=message, errors=errors or [message])
 
@@ -71,10 +66,10 @@ class GmailService:
     )
     def initialize(
         self,
-        gmail_api: Optional[GmailApiInterface] = None,
-        database: Optional[DatabaseInterface] = None,
-        config: Optional[ConfigurationInterface] = None,
-        logger: Optional[LoggerInterface] = None,
+        gmail_api: GmailApiInterface | None = None,
+        database: DatabaseInterface | None = None,
+        config: ConfigurationInterface | None = None,
+        logger: LoggerInterface | None = None,
     ) -> ServiceResult:
         """Initialize Gmail service."""
         try:
@@ -96,7 +91,7 @@ class GmailService:
             logger.error(f"Gmail service initialization failed: {e}")
             return ServiceResult.error_result(f"Initialization failed: {str(e)}")
 
-    def sync_emails(self, query: Optional[str] = None, limit: int = 100) -> ServiceResult:
+    def sync_emails(self, query: str | None = None, limit: int = 100) -> ServiceResult:
         """Sync emails from Gmail to database."""
         try:
             self.logger.info(f"Starting email sync with limit {limit}")
@@ -138,7 +133,7 @@ class GmailService:
             self.logger.error(f"Email sync failed: {e}")
             return ServiceResult.error_result(f"Sync failed: {str(e)}")
 
-    def create_labels(self, label_names: List[str]) -> ServiceResult:
+    def create_labels(self, label_names: list[str]) -> ServiceResult:
         """Create Gmail labels."""
         try:
             created_labels = {}
@@ -198,11 +193,11 @@ class PredictionService:
     def predict_messages(
         self,
         limit: int = 50,
-        database: Optional[DatabaseInterface] = None,
-        model: Optional[ModelInterface] = None,
-        text_processor: Optional[TextProcessorInterface] = None,
-        config: Optional[ConfigurationInterface] = None,
-        logger: Optional[LoggerInterface] = None,
+        database: DatabaseInterface | None = None,
+        model: ModelInterface | None = None,
+        text_processor: TextProcessorInterface | None = None,
+        config: ConfigurationInterface | None = None,
+        logger: LoggerInterface | None = None,
     ) -> ServiceResult:
         """Generate predictions for unreviewed messages."""
         try:
@@ -316,12 +311,12 @@ class TrainingService:
         self,
         epochs: int = 6,
         batch_size: int = 64,
-        database: Optional[DatabaseInterface] = None,
-        model: Optional[ModelInterface] = None,
-        text_processor: Optional[TextProcessorInterface] = None,
-        file_system: Optional[FileSystemInterface] = None,
-        config: Optional[ConfigurationInterface] = None,
-        logger: Optional[LoggerInterface] = None,
+        database: DatabaseInterface | None = None,
+        model: ModelInterface | None = None,
+        text_processor: TextProcessorInterface | None = None,
+        file_system: FileSystemInterface | None = None,
+        config: ConfigurationInterface | None = None,
+        logger: LoggerInterface | None = None,
     ) -> ServiceResult:
         """Train the ML model."""
         try:
@@ -418,10 +413,10 @@ class ActionService:
         self,
         dry_run: bool = True,
         limit: int = 100,
-        gmail_api: Optional[GmailApiInterface] = None,
-        database: Optional[DatabaseInterface] = None,
-        config: Optional[ConfigurationInterface] = None,
-        logger: Optional[LoggerInterface] = None,
+        gmail_api: GmailApiInterface | None = None,
+        database: DatabaseInterface | None = None,
+        config: ConfigurationInterface | None = None,
+        logger: LoggerInterface | None = None,
     ) -> ServiceResult:
         """Apply predicted actions to Gmail messages."""
         try:

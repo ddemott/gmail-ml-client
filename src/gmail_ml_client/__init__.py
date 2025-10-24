@@ -18,27 +18,28 @@ from . import cfg, logger
 def __getattr__(name):
     """Lazy import for modules that may have initialization dependencies."""
     lazy_imports = {
-        'api': '.api',
-        'cli_fixed': '.cli_fixed',
-        'gmail_client': '.gmail_client',
-        'model': '.model',
-        'data_store': '.data_store',
-        'preprocessor': '.preprocessor',
-        'sorter': '.sorter',
-        'trainer': '.trainer',
-        'auth_manager': '.auth_manager',
-        'interfaces': '.interfaces',
-        'services': '.services',
-        'enhanced_services': '.enhanced_services',
-        'testable_services': '.testable_services',
-        'validation_layer': '.validation_layer',
-        'cache_layer': '.cache_layer',
-        'config_manager': '.config_manager',
-        'adapters': '.adapters',
+        "api": ".api",
+        "cli_fixed": ".cli_fixed",
+        "gmail_client": ".gmail_client",
+        "model": ".model",
+        "data_store": ".data_store",
+        "preprocessor": ".preprocessor",
+        "sorter": ".sorter",
+        "trainer": ".trainer",
+        "auth_manager": ".auth_manager",
+        "interfaces": ".interfaces",
+        "services": ".services",
+        "enhanced_services": ".enhanced_services",
+        "testable_services": ".testable_services",
+        "validation_layer": ".validation_layer",
+        "cache_layer": ".cache_layer",
+        "config_manager": ".config_manager",
+        "adapters": ".adapters",
     }
 
     if name in lazy_imports:
         from importlib import import_module
+
         module = import_module(lazy_imports[name], __name__)
         globals()[name] = module
         return module

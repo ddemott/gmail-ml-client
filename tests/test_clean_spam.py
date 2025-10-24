@@ -32,15 +32,15 @@ def main():
 
             # Show if SPAM is in the classes
             if "SPAM" in classes:
-                print(f"✅ SPAM detection enabled")
+                print("✅ SPAM detection enabled")
             else:
-                print(f"⚠️  No SPAM category found")
+                print("⚠️  No SPAM category found")
 
         except Exception as e:
             print(f"❌ Error loading model: {e}")
             return
 
-        print(f"\n🔍 Testing on recent inbox emails...")
+        print("\n🔍 Testing on recent inbox emails...")
 
         # Get recent messages from inbox
         messages = list_messages(max_results=15)
@@ -93,19 +93,19 @@ def main():
             except Exception as e:
                 print(f"❌ Error processing email {i}: {e}")
 
-        print(f"📊 DETECTION SUMMARY:")
+        print("📊 DETECTION SUMMARY:")
         print("=" * 30)
         print(f"🚨 Emails flagged as SPAM: {spam_detected}")
         print(f"✅ Emails classified as legitimate: {legitimate_detected}")
         print(f"📧 Total emails tested: {spam_detected + legitimate_detected}")
 
-        print(f"\n💡 ABOUT THE CLEANED MODEL:")
+        print("\n💡 ABOUT THE CLEANED MODEL:")
         print("• Trained ONLY on genuine SPAM folder emails")
         print("• Removed TRASH folder contamination")
         print("• Should have fewer false positives")
         print("• Better at identifying real spam patterns")
 
-        print(f"\n🔍 Look for these improvements:")
+        print("\n🔍 Look for these improvements:")
         print("• Legitimate emails should rarely be flagged as spam")
         print("• Real spam should be detected with high confidence")
         print("• Business emails, newsletters should be categorized properly")

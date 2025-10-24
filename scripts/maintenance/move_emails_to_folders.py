@@ -70,7 +70,7 @@ def move_emails_to_folders(limit=50, dry_run=True):
         error_count = 0
 
         try:
-            print(f"\n🤖 Processing emails with your trained model...")
+            print("\n🤖 Processing emails with your trained model...")
 
             for i, msg in enumerate(messages, 1):
                 try:
@@ -81,7 +81,7 @@ def move_emails_to_folders(limit=50, dry_run=True):
                     text = extract_text(full_msg)
 
                     if not text or len(text.strip()) < 10:
-                        print(f"   ⚠️  Skipped (no text content)")
+                        print("   ⚠️  Skipped (no text content)")
                         skipped_count += 1
                         continue
 
@@ -174,7 +174,7 @@ def move_emails_to_folders(limit=50, dry_run=True):
                     error_count += 1
                     continue
 
-            print(f"\n🎉 PROCESSING COMPLETE!")
+            print("\n🎉 PROCESSING COMPLETE!")
             print("=" * 50)
             print(f"📧 Total emails processed: {len(messages)}")
             if dry_run:
@@ -185,11 +185,11 @@ def move_emails_to_folders(limit=50, dry_run=True):
             print(f"❌ Errors: {error_count} emails")
 
             if dry_run and moved_count > 0:
-                print(f"\n🚀 To actually move emails, run:")
-                print(f"   python move_emails_to_folders.py --live")
+                print("\n🚀 To actually move emails, run:")
+                print("   python move_emails_to_folders.py --live")
             elif moved_count > 0:
-                print(f"\n🎯 SUCCESS! Your emails have been organized!")
-                print(f"📁 Check your Gmail - emails should be in their predicted folders")
+                print("\n🎯 SUCCESS! Your emails have been organized!")
+                print("📁 Check your Gmail - emails should be in their predicted folders")
 
         finally:
             session.close()

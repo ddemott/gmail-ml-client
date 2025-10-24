@@ -86,7 +86,7 @@ def main():
         print(f"📊 Found {len(useful_folders)} useful folders and {len(spam_folders)} spam folders")
 
         # Train on useful folders first
-        print(f"\n🎯 Phase 1: Training on Useful Categories")
+        print("\n🎯 Phase 1: Training on Useful Categories")
         print("=" * 50)
 
         total_processed = 0
@@ -102,7 +102,7 @@ def main():
             messages = list_messages(label_ids=[label_id], max_results=max_messages)
 
             if not messages:
-                print(f"   ⚠️  No messages found")
+                print("   ⚠️  No messages found")
                 continue
 
             print(f"   📧 Found {len(messages)} messages, processing...")
@@ -163,7 +163,7 @@ def main():
                 session.close()
 
         # Train on SPAM last to eliminate false positives
-        print(f"\n🎯 Phase 2: Training on SPAM (Last to eliminate false positives)")
+        print("\n🎯 Phase 2: Training on SPAM (Last to eliminate false positives)")
         print("=" * 60)
 
         for spam_label in spam_folders:
@@ -176,7 +176,7 @@ def main():
             messages = list_messages(label_ids=[label_id], max_results=200)
 
             if not messages:
-                print(f"   ⚠️  No messages found")
+                print("   ⚠️  No messages found")
                 continue
 
             print(f"   📧 Found {len(messages)} SPAM messages, processing...")
@@ -236,25 +236,25 @@ def main():
             finally:
                 session.close()
 
-        print(f"\n📊 COMPLETE RETRAINING SUMMARY:")
+        print("\n📊 COMPLETE RETRAINING SUMMARY:")
         print("=" * 50)
         print(f"Total messages processed: {total_processed}")
-        print(f"✅ All useful categories trained first")
-        print(f"✅ SPAM trained last to eliminate false positives")
-        print(f"✅ Job folder prioritized with up to 100 messages")
+        print("✅ All useful categories trained first")
+        print("✅ SPAM trained last to eliminate false positives")
+        print("✅ Job folder prioritized with up to 100 messages")
 
         if total_processed > 0:
-            print(f"\n🤖 Training model with complete dataset...")
+            print("\n🤖 Training model with complete dataset...")
             simple_train()
 
-            print(f"\n🎉 COMPLETE SUCCESS!")
+            print("\n🎉 COMPLETE SUCCESS!")
             print("=" * 40)
             print("✅ Model retrained with ALL folder data")
             print("✅ Job folder prioritized with latest data")
             print("✅ SPAM trained last to minimize false positives")
             print("✅ Ready for production use")
 
-            print(f"\n📝 NEXT STEPS:")
+            print("\n📝 NEXT STEPS:")
             print("• Test the improved model: python test_predictions.py")
             print("• Check job email classification accuracy")
             print("• Verify SPAM detection with minimal false positives")

@@ -1,5 +1,5 @@
 import os
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 import joblib
 import numpy as np
@@ -93,8 +93,8 @@ def build_net(input_dim: int, output_dim: int) -> Any:
 
 
 def train(
-    texts: List[str], labels: List[str], epochs: int = 6, batch_size: int = 64
-) -> Tuple[str, List[str]]:
+    texts: list[str], labels: list[str], epochs: int = 6, batch_size: int = 64
+) -> tuple[str, list[str]]:
     """Train the neural classifier with enhanced error handling and validation."""
     try:
         if not texts or not labels:
@@ -123,7 +123,9 @@ def train(
 
         # Check if we have enough samples for stratified split
         min_test_samples = len(le.classes_)
-        if len(texts) < min_test_samples * 4:  # Need at least 4x min samples for reliable stratified split
+        if (
+            len(texts) < min_test_samples * 4
+        ):  # Need at least 4x min samples for reliable stratified split
             # For small datasets, train without validation
             logger.info(f"Small dataset ({len(texts)} samples), training without validation split")
             X_train, y_train = X.toarray(), y
@@ -172,16 +174,14 @@ def train(
         if X_val is not None:
             val_preds = model.predict(X_val, verbose=0).argmax(axis=1)
             report = classification_report(y_val, val_preds, target_names=le.classes_)
-            final_accuracy = history.history['val_accuracy'][-1]
+            final_accuracy = history.history["val_accuracy"][-1]
         else:
             # For small datasets, use training accuracy
             train_preds = model.predict(X_train, verbose=0).argmax(axis=1)
             report = classification_report(y_train, train_preds, target_names=le.classes_)
-            final_accuracy = history.history['accuracy'][-1]
+            final_accuracy = history.history["accuracy"][-1]
 
-        logger.info(
-            f"Training completed. Final accuracy: {final_accuracy:.3f}"
-        )
+        logger.info(f"Training completed. Final accuracy: {final_accuracy:.3f}")
         return report, list(le.classes_)
 
     except Exception as e:
@@ -189,7 +189,7 @@ def train(
         raise
 
 
-def load() -> Tuple[TfidfVectorizer, LabelEncoder, Any]:
+def load() -> tuple[TfidfVectorizer, LabelEncoder, Any]:
     """Load trained model with error handling."""
     try:
         if not all(os.path.exists(path) for path in [VECT_PATH, LABE_PATH, KerasPath]):
@@ -206,7 +206,7 @@ def load() -> Tuple[TfidfVectorizer, LabelEncoder, Any]:
         raise
 
 
-def predict(texts: List[str]) -> Tuple[List[str], List[float], List[float]]:
+def predict(texts: list[str]) -> tuple[list[str], list[float], list[float]]:
     """Make predictions with error handling."""
     try:
         if not texts:

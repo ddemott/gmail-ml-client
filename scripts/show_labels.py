@@ -24,25 +24,25 @@ def show_labels_and_strategy():
             else:
                 system_labels.append(label_name)
 
-        print(f"📋 Your Gmail Labels:")
+        print("📋 Your Gmail Labels:")
         print(f"   🏷️  User Labels: {len(user_labels)}")
         print(f"   🔧 System Labels: {len(system_labels)}")
 
         if user_labels:
-            print(f"\n🏷️  Your Custom Labels:")
+            print("\n🏷️  Your Custom Labels:")
             for i, label in enumerate(sorted(user_labels), 1):
                 print(f"   {i:2d}. {label}")
 
-        print(f"\n🚀 Training Strategy for Your Labels:")
-        print(f"   1. 📧 Sync emails with existing labels")
-        print(f"   2. 🏷️  Use emails already in your folders as training data")
-        print(f"   3. 🤖 Train model to recognize patterns")
-        print(f"   4. 📨 Auto-classify new incoming emails")
+        print("\n🚀 Training Strategy for Your Labels:")
+        print("   1. 📧 Sync emails with existing labels")
+        print("   2. 🏷️  Use emails already in your folders as training data")
+        print("   3. 🤖 Train model to recognize patterns")
+        print("   4. 📨 Auto-classify new incoming emails")
 
-        print(f"\n💡 Recommendations:")
-        print(f"   • Use 10-20 examples per label for good accuracy")
-        print(f"   • Start with your most used labels")
-        print(f"   • Review and correct predictions to improve")
+        print("\n💡 Recommendations:")
+        print("   • Use 10-20 examples per label for good accuracy")
+        print("   • Start with your most used labels")
+        print("   • Review and correct predictions to improve")
 
         return user_labels
 

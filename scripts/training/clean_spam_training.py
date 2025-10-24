@@ -37,7 +37,7 @@ def main():
                 .count()
             )
 
-            print(f"📊 Current Training Data:")
+            print("📊 Current Training Data:")
             print(f"   Total messages: {total_messages}")
             print(f"   SPAM labeled messages: {spam_messages}")
 
@@ -46,7 +46,7 @@ def main():
             # Since we can't easily distinguish TRASH vs SPAM messages after they're in DB,
             # let's remove ALL current SPAM entries and re-add only from SPAM folder
 
-            print(f"\n🗑️  Removing all current SPAM training data...")
+            print("\n🗑️  Removing all current SPAM training data...")
             deleted_count = session.query(Message).filter_by(gold_label="SPAM").delete()
             session.commit()
 
@@ -56,13 +56,13 @@ def main():
             remaining_messages = session.query(Message).count()
             print(f"📊 Remaining training data: {remaining_messages} messages")
 
-            print(f"\n🎯 Now we'll retrain with ONLY genuine SPAM folder data...")
+            print("\n🎯 Now we'll retrain with ONLY genuine SPAM folder data...")
 
         finally:
             session.close()
 
         # Now retrain with only SPAM folder data
-        print(f"\n🔄 Retraining with SPAM folder only...")
+        print("\n🔄 Retraining with SPAM folder only...")
         retrain_spam_only()
 
     except Exception as e:
@@ -93,7 +93,7 @@ def retrain_spam_only():
             print("❌ SPAM folder not found!")
             return
 
-        print(f"📁 Processing genuine SPAM folder only...")
+        print("📁 Processing genuine SPAM folder only...")
 
         # Get messages from SPAM folder only
         messages = list_messages(label_ids=[spam_label["id"]], max_results=500)
@@ -163,16 +163,16 @@ def retrain_spam_only():
             session.close()
 
         if processed_count > 0:
-            print(f"\n🤖 Retraining model with clean SPAM data only...")
+            print("\n🤖 Retraining model with clean SPAM data only...")
             simple_train()
 
-            print(f"\n🎉 SUCCESS!")
+            print("\n🎉 SUCCESS!")
             print("=" * 50)
             print("✅ Model retrained with ONLY genuine SPAM data")
             print("✅ No more TRASH data contaminating spam detection")
             print("✅ Model should now be more accurate at identifying real spam")
 
-            print(f"\n📝 WHAT CHANGED:")
+            print("\n📝 WHAT CHANGED:")
             print("• Removed all TRASH folder emails from training")
             print("• Kept only emails from Gmail's SPAM folder")
             print("• Model now learns from confirmed spam patterns only")

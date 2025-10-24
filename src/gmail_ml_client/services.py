@@ -3,21 +3,12 @@ Business logic services for Gmail ML Client.
 Provides clean interface between API endpoints and core functionality.
 """
 
-import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
-from .cfg import DEFAULT_TARGET_LABELS, JUNK_LABELS, SYNC_PAGE_SIZE, SYSTEM_LABELS
-from .data_store import (
-    Message,
-    fetch_for_prediction,
-    fetch_for_training,
-    init_db,
-    mark_review,
-    save_prediction,
-    upsert_message,
-)
+from .cfg import DEFAULT_TARGET_LABELS, SYNC_PAGE_SIZE
+from .data_store import fetch_for_training, init_db, mark_review, upsert_message
 from .gmail_client import (
     ensure_label,
     get_labels,
@@ -27,8 +18,6 @@ from .gmail_client import (
     trash_message,
 )
 from .logger import logger
-from .model import predict as model_predict
-from .model import train as model_train
 from .preprocessor import extract_text
 from .sorter import propose
 from .trainer import train_from_feedback
@@ -48,11 +37,11 @@ class EmailAction:
     snippet: str
     spam_score: float
     confidence: float
-    predicted_label: Optional[str]
-    target_label: Optional[str]
+    predicted_label: str | None
+    target_label: str | None
     action: ActionType
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "snippet": self.snippet,
@@ -71,7 +60,7 @@ class SyncResult:
     total_messages: int
     processed_messages: int
     failed_messages: int
-    errors: List[str]
+    errors: list[str]
 
 
 @dataclass
@@ -80,8 +69,8 @@ class TrainingResult:
 
     success: bool
     report: str
-    classes: List[str]
-    error: Optional[str] = None
+    classes: list[str]
+    error: str | None = None
 
 
 @dataclass
@@ -91,7 +80,7 @@ class ApplyResult:
     total_actions: int
     applied_actions: int
     dry_run: bool
-    errors: List[str]
+    errors: list[str]
 
 
 class GmailService:
@@ -112,7 +101,7 @@ class GmailService:
             self.logger.error(f"Initialization failed: {e}")
             raise
 
-    def ensure_default_labels(self) -> Dict[str, str]:
+    def ensure_default_labels(self) -> dict[str, str]:
         """Create default target labels if missing."""
         try:
             self.logger.info("Ensuring default labels exist")
@@ -127,7 +116,7 @@ class GmailService:
             self.logger.error(f"Label creation failed: {e}")
             raise
 
-    def get_all_labels(self) -> List[Dict[str, str]]:
+    def get_all_labels(self) -> list[dict[str, str]]:
         """Get all Gmail labels."""
         try:
             return get_labels()
@@ -142,7 +131,7 @@ class EmailSyncService:
     def __init__(self):
         self.logger = logger
 
-    def sync_messages(self, query: Optional[str] = None, limit: int = SYNC_PAGE_SIZE) -> SyncResult:
+    def sync_messages(self, query: str | None = None, limit: int = SYNC_PAGE_SIZE) -> SyncResult:
         """Sync messages from Gmail to local database."""
         try:
             self.logger.info(f"Starting sync with query='{query}', limit={limit}")
@@ -186,7 +175,7 @@ class PredictionService:
     def __init__(self):
         self.logger = logger
 
-    def get_predictions(self, limit: int = 50) -> List[EmailAction]:
+    def get_predictions(self, limit: int = 50) -> list[EmailAction]:
         """Get predictions for unreviewed messages."""
         try:
             self.logger.info(f"Making predictions for up to {limit} messages")
@@ -251,7 +240,7 @@ class TrainingService:
             self.logger.error(error_msg)
             return TrainingResult(success=False, report="", classes=[], error=error_msg)
 
-    def get_training_data_stats(self) -> Dict[str, Any]:
+    def get_training_data_stats(self) -> dict[str, Any]:
         """Get statistics about available training data."""
         try:
             texts, labels = fetch_for_training()

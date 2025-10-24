@@ -1,9 +1,6 @@
-import json
 import sys
-from typing import Optional
 
 import typer
-from cfg import JUNK_LABELS, SYNC_PAGE_SIZE, SYSTEM_LABELS
 from data_store import init_db, mark_review, upsert_message
 from gmail_client import (
     ensure_label,
@@ -26,7 +23,7 @@ app = typer.Typer(help="Gmail ML Client - trainable spam filter and auto sorter"
 
 @app.command("help-docs")
 def help_docs(
-    topic: Optional[str] = typer.Argument(None, help="Specific help topic to show"),
+    topic: str | None = typer.Argument(None, help="Specific help topic to show"),
     web: bool = typer.Option(False, "--web", help="Open web documentation"),
     readme: bool = typer.Option(False, "--readme", help="Open README.md"),
     cli: bool = typer.Option(False, "--cli", help="Open CLI help"),

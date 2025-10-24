@@ -42,7 +42,7 @@ def process_real_emails():
         classified = 0
 
         try:
-            print(f"\n🤖 Processing emails with your trained model...")
+            print("\n🤖 Processing emails with your trained model...")
 
             for i, msg in enumerate(messages, 1):
                 try:
@@ -53,7 +53,7 @@ def process_real_emails():
                     text = extract_text(full_msg)
 
                     if not text or len(text.strip()) < 10:
-                        print(f"   ⚠️  Skipped (no text content)")
+                        print("   ⚠️  Skipped (no text content)")
                         continue
 
                     # Check if already processed
@@ -98,7 +98,7 @@ def process_real_emails():
                     # Commit every 10 messages
                     if processed % 10 == 0:
                         session.commit()
-                        print(f"   💾 Saved batch of 10 classifications")
+                        print("   💾 Saved batch of 10 classifications")
 
                     # Small delay to be nice to Gmail API
                     time.sleep(0.1)
@@ -110,15 +110,15 @@ def process_real_emails():
             # Final commit
             session.commit()
 
-            print(f"\n🎉 PROCESSING COMPLETE!")
+            print("\n🎉 PROCESSING COMPLETE!")
             print("=" * 40)
             print(f"📧 Total emails processed: {processed}")
             print(f"✅ Already classified: {classified}")
             print(f"🆕 Newly classified: {processed}")
-            print(f"🎯 Your model automatically sorted emails into your 54 categories!")
+            print("🎯 Your model automatically sorted emails into your 54 categories!")
 
             # Show classification summary
-            print(f"\n📊 CLASSIFICATION SUMMARY:")
+            print("\n📊 CLASSIFICATION SUMMARY:")
             print("-" * 30)
 
             # Get classification counts using SQLAlchemy ORM
@@ -136,7 +136,7 @@ def process_real_emails():
             for result in results:
                 print(f"   {result.target_label}: {result.count} emails")
 
-            print(f"\n🎯 NEXT STEPS:")
+            print("\n🎯 NEXT STEPS:")
             print("1. Review classifications in web interface: http://localhost:8000/docs")
             print("2. Use /api/messages to see all classified emails")
             print("3. Correct any mistakes with /api/review")

@@ -4,15 +4,13 @@ Setup script for Gmail ML Client
 Guides users through initial configuration and credential setup.
 """
 
-import os
 import sys
 import webbrowser
 from pathlib import Path
 
-from rich import print
 from rich.console import Console
 from rich.panel import Panel
-from rich.prompt import Confirm, Prompt
+from rich.prompt import Confirm
 
 console = Console()
 
