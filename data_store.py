@@ -1,22 +1,68 @@
-from __future__ import annotations
-import os, json, time
-from typing import Optional, Dict, Any, List, Tuple
-from sqlalchemy import create_engine, Column, String, Integer, Float, Text, Boolean, DateTime
+import json
+import os
+import time
+from typing import Any, Dict, List, Optional, Tuple
+
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, create_engine
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.sql import func
-from sqlalchemy.exc import SQLAlchemyError
+
 from cfg import DB_PATH
 from logger import logger
 
 Base = declarative_base()
-engine = create_engine(f"sqlite:///{DB_PATH}", future=True)
-Session = sessionmaker(bind=engine, expire_on_commit=False)
+
+_engine = None
+_Session = None
+_current_db_path = None
+
+
+def get_db_path() -> str:
+    """Get the current database path from config."""
+    from cfg import DB_PATH
+    return DB_PATH
+
+
+def get_engine():
+    """Get database engine with current path."""
+    global _engine, _current_db_path
+    current_path = get_db_path()
+    if _engine is None or _current_db_path != current_path:
+        _engine = create_engine(f"sqlite:///{current_path}", future=True)
+        _current_db_path = current_path
+        # Reset session when engine changes
+        global _Session
+        _Session = None
+    return _engine
+
+
+def get_session():
+    """Get database session maker."""
+    global _Session
+    if _Session is None:
+        _Session = sessionmaker(bind=get_engine(), expire_on_commit=False)
+    return _Session
+
+
+def init_db() -> None:
+    """Initialize database with error handling."""
+    try:
+        Base.metadata.create_all(get_engine())
+        logger.info(f"Database initialized at {get_db_path()}")
+    except SQLAlchemyError as e:
+        logger.error(f"Database initialization error: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error initializing database: {e}")
+        raise
+
 
 class Message(Base):
     __tablename__ = "messages"
-    id = Column(String, primary_key=True)   # Gmail msg id
+    id = Column(String, primary_key=True)  # Gmail msg id
     snippet = Column(Text)
-    text = Column(Text)                      # preprocessed text
+    text = Column(Text)  # preprocessed text
     label_guess = Column(String, nullable=True)
     spam_score = Column(Float, default=0.0)
     target_label = Column(String, nullable=True)
@@ -25,21 +71,10 @@ class Message(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
-def init_db():
-    """Initialize database with error handling."""
-    try:
-        Base.metadata.create_all(engine)
-        logger.info(f"Database initialized at {DB_PATH}")
-    except SQLAlchemyError as e:
-        logger.error(f"Database initialization error: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Unexpected error initializing database: {e}")
-        raise
 
-def upsert_message(msg_id: str, snippet: str, text: str):
+def upsert_message(msg_id: str, snippet: str, text: str) -> None:
     """Insert or update a message with error handling."""
-    session = Session()
+    session = get_session()()
     try:
         m = session.get(Message, msg_id)
         if not m:
@@ -62,9 +97,12 @@ def upsert_message(msg_id: str, snippet: str, text: str):
     finally:
         session.close()
 
-def save_prediction(msg_id: str, spam_score: float, label_guess: Optional[str], target_label: Optional[str]):
+
+def save_prediction(
+    msg_id: str, spam_score: float, label_guess: Optional[str], target_label: Optional[str]
+) -> None:
     """Save prediction results with error handling."""
-    session = Session()
+    session = get_session()()
     try:
         m = session.get(Message, msg_id)
         if not m:
@@ -86,9 +124,10 @@ def save_prediction(msg_id: str, spam_score: float, label_guess: Optional[str], 
     finally:
         session.close()
 
-def mark_review(msg_id: str, gold_label: str):
+
+def mark_review(msg_id: str, gold_label: str) -> None:
     """Mark a message as reviewed with error handling."""
-    session = Session()
+    session = get_session()()
     try:
         m = session.get(Message, msg_id)
         if not m:
@@ -109,9 +148,10 @@ def mark_review(msg_id: str, gold_label: str):
     finally:
         session.close()
 
-def fetch_for_training(limit: int = 2000):
+
+def fetch_for_training(limit: int = 2000) -> Tuple[List[str], List[str]]:
     """Fetch reviewed messages for training with error handling."""
-    session = Session()
+    session = get_session()()
     try:
         rows = session.query(Message).filter(Message.gold_label.isnot(None)).limit(limit).all()
         texts = [r.text for r in rows]
@@ -127,9 +167,10 @@ def fetch_for_training(limit: int = 2000):
     finally:
         session.close()
 
-def fetch_for_prediction(limit: int = 200):
+
+def fetch_for_prediction(limit: int = 200) -> List[Message]:
     """Fetch unreviewed messages for prediction with error handling."""
-    session = Session()
+    session = get_session()()
     try:
         rows = session.query(Message).filter(Message.reviewed == False).limit(limit).all()
         logger.info(f"Fetched {len(rows)} messages for prediction")
@@ -139,6 +180,30 @@ def fetch_for_prediction(limit: int = 200):
         raise
     except Exception as e:
         logger.error(f"Unexpected error fetching prediction data: {e}")
+        raise
+    finally:
+        session.close()
+
+
+def get_unreviewed_messages(limit: int = 200) -> List[Tuple[str, str]]:
+    """Get unreviewed messages as (id, snippet) tuples for compatibility."""
+    messages = fetch_for_prediction(limit)
+    return [(msg.id, msg.snippet or "") for msg in messages]
+
+
+def get_reviewed_messages() -> List[Tuple[str, str]]:
+    """Get reviewed messages as (id, label) tuples for compatibility."""
+    session = get_session()()
+    try:
+        rows = session.query(Message).filter(Message.gold_label.isnot(None)).all()
+        result = [(r.id, r.gold_label) for r in rows]
+        logger.debug(f"Fetched {len(result)} reviewed messages")
+        return result
+    except SQLAlchemyError as e:
+        logger.error(f"Database error fetching reviewed messages: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error fetching reviewed messages: {e}")
         raise
     finally:
         session.close()

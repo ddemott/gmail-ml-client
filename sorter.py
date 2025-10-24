@@ -1,8 +1,9 @@
-from __future__ import annotations
-from typing import List, Tuple, Dict
-from cfg import THRESHOLDS, RULES_INCLUDE, RULES_EXCLUDE, SYSTEM_LABELS, DEFAULT_TARGET_LABELS
+from typing import Any, Dict, List, Tuple
+
+from cfg import DEFAULT_TARGET_LABELS, RULES_EXCLUDE, RULES_INCLUDE, SYSTEM_LABELS, THRESHOLDS
 from data_store import fetch_for_prediction, save_prediction
 from model import predict
+
 
 def suggest_label(text: str, model_label: str) -> str:
     # bias by rules
@@ -22,7 +23,8 @@ def suggest_label(text: str, model_label: str) -> str:
         return best_rule
     return model_label
 
-def propose(limit: int = 100):
+
+def propose(limit: int = 100) -> List[Dict[str, Any]]:
     rows = fetch_for_prediction(limit=limit)
     if not rows:
         return []
@@ -43,6 +45,15 @@ def propose(limit: int = 100):
             else:
                 target = t
         save_prediction(r.id, float(sp), lab, target)
-        actions.append({"id": r.id, "snippet": r.snippet, "spam_score": float(sp), "conf": float(c),
-                        "pred_label": lab, "target": target, "action": action})
+        actions.append(
+            {
+                "id": r.id,
+                "snippet": r.snippet,
+                "spam_score": float(sp),
+                "conf": float(c),
+                "pred_label": lab,
+                "target": target,
+                "action": action,
+            }
+        )
     return actions

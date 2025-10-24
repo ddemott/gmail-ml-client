@@ -1,11 +1,15 @@
-from __future__ import annotations
-import base64, os, re, time
-from typing import List, Dict, Optional, Tuple
+import base64
+import os
+import re
+import time
+from typing import Any, Dict, List, Optional, Tuple
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
 from logger import logger
 
 SCOPES = [
@@ -13,16 +17,18 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.labels",
 ]
 
-def _token_path():
+
+def _token_path() -> str:
     return "token.json"
 
-def get_service():
+
+def get_service() -> Any:
     """Get authenticated Gmail service with error handling."""
     try:
         creds = None
         if os.path.exists(_token_path()):
             creds = Credentials.from_authorized_user_file(_token_path(), SCOPES)
-        
+
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 logger.info("Refreshing expired credentials")
@@ -40,31 +46,38 @@ def get_service():
                 logger.info("Starting OAuth flow")
                 flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
                 creds = flow.run_local_server(port=0)
-            
+
             with open(_token_path(), "w") as token:
                 token.write(creds.to_json())
                 logger.info("Saved credentials to token.json")
-        
+
         return build("gmail", "v1", credentials=creds)
     except Exception as e:
         logger.error(f"Failed to get Gmail service: {e}")
         raise
 
-def list_messages(query: str = None, label_ids: List[str] = None, max_results: int = 100):
+
+def list_messages(
+    query: Optional[str] = None, label_ids: Optional[List[str]] = None, max_results: int = 100
+) -> List[Dict[str, str]]:
     """List Gmail messages with error handling."""
     try:
         svc = get_service()
         user_id = "me"
-        req = svc.users().messages().list(userId=user_id, q=query, labelIds=label_ids, maxResults=max_results)
+        req = (
+            svc.users()
+            .messages()
+            .list(userId=user_id, q=query, labelIds=label_ids, maxResults=max_results)
+        )
         msgs = []
-        
+
         while req is not None:
             resp = req.execute()
             msgs.extend(resp.get("messages", []))
             req = svc.users().messages().list_next(req, resp)
             if len(msgs) >= max_results:
                 break
-        
+
         logger.info(f"Listed {len(msgs)} messages")
         return msgs[:max_results]
     except HttpError as e:
@@ -74,7 +87,8 @@ def list_messages(query: str = None, label_ids: List[str] = None, max_results: i
         logger.error(f"Unexpected error listing messages: {e}")
         raise
 
-def get_message(msg_id: str):
+
+def get_message(msg_id: str) -> Dict[str, Any]:
     """Get a specific Gmail message with error handling."""
     try:
         svc = get_service()
@@ -86,7 +100,10 @@ def get_message(msg_id: str):
         logger.error(f"Unexpected error getting message {msg_id}: {e}")
         raise
 
-def modify_labels(msg_id: str, add: List[str] = None, remove: List[str] = None):
+
+def modify_labels(
+    msg_id: str, add: Optional[List[str]] = None, remove: Optional[List[str]] = None
+) -> Dict[str, Any]:
     """Modify labels on a Gmail message with error handling."""
     try:
         svc = get_service()
@@ -101,7 +118,8 @@ def modify_labels(msg_id: str, add: List[str] = None, remove: List[str] = None):
         logger.error(f"Unexpected error modifying labels for {msg_id}: {e}")
         raise
 
-def trash_message(msg_id: str):
+
+def trash_message(msg_id: str) -> Dict[str, Any]:
     """Move a Gmail message to trash with error handling."""
     try:
         svc = get_service()
@@ -115,7 +133,8 @@ def trash_message(msg_id: str):
         logger.error(f"Unexpected error trashing message {msg_id}: {e}")
         raise
 
-def get_labels():
+
+def get_labels() -> List[Dict[str, str]]:
     """Get all Gmail labels with error handling."""
     try:
         svc = get_service()
@@ -130,18 +149,19 @@ def get_labels():
         logger.error(f"Unexpected error getting labels: {e}")
         raise
 
+
 def ensure_label(name: str) -> str:
     """Ensure a Gmail label exists, creating if necessary."""
     try:
         svc = get_service()
         labels = get_labels()
-        
+
         # Check if label already exists
         for l in labels:
             if l["name"] == name:
                 logger.debug(f"Label '{name}' already exists with ID {l['id']}")
                 return l["id"]
-        
+
         # Create new label
         body = {"name": name, "labelListVisibility": "labelShow", "messageListVisibility": "show"}
         created = svc.users().labels().create(userId="me", body=body).execute()

@@ -1,21 +1,23 @@
-from __future__ import annotations
-import base64, re
-from typing import Dict
+import base64
+import re
+from typing import Any, Dict
 
-def _decode_body(payload_part: Dict) -> str:
+
+def _decode_body(payload_part: Dict[str, Any]) -> str:
     data = payload_part.get("body", {}).get("data")
     if not data:
         return ""
     return base64.urlsafe_b64decode(data.encode("UTF-8")).decode("UTF-8", errors="ignore")
 
-def extract_text(msg: Dict) -> str:
+
+def extract_text(msg: Dict[str, Any]) -> str:
     headers = {h["name"].lower(): h["value"] for h in msg.get("payload", {}).get("headers", [])}
     subject = headers.get("subject", "")
 
     payload = msg.get("payload", {})
     body_text = ""
 
-    def walk(p):
+    def walk(p: Dict[str, Any]) -> None:
         nonlocal body_text
         mime = p.get("mimeType", "")
         if "text/plain" in mime and p.get("body", {}).get("data"):

@@ -67,7 +67,7 @@ python api.py
 ```bash
 # Open specific documentation files
 python cli.py help --readme
-python cli.py help --cli  
+python cli.py help --cli
 python cli.py help --api
 ```
 
@@ -87,7 +87,7 @@ python cli.py help --api
 ### 📱 Help System Features
 
 - **Interactive CLI help** - Integrated into main CLI
-- **Topic-based guidance** - Focused help for specific needs  
+- **Topic-based guidance** - Focused help for specific needs
 - **Examples and workflows** - Real-world usage patterns
 - **Troubleshooting** - Common issues and solutions
 - **Documentation launcher** - Open files and web docs

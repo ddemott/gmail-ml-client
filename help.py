@@ -9,9 +9,11 @@ import sys
 import webbrowser
 from pathlib import Path
 
+
 def show_main_help():
     """Display main help menu."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                        Gmail ML Client - Help System                        │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -44,13 +46,16 @@ def show_main_help():
    python help.py commands
    python help.py workflow
    python help.py --web
-   
+
 Type 'python help.py <topic>' for specific help.
-""")
+"""
+    )
+
 
 def show_commands_help():
     """Display CLI commands help."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                           CLI Commands Reference                            │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -62,17 +67,17 @@ def show_commands_help():
 📧 EMAIL COMMANDS:
    sync [--q QUERY] [--limit N]       Download emails from Gmail
    review [--limit N]                 Interactive email review and labeling
-   
+
 🧠 MACHINE LEARNING:
    train [--epochs N]                 Train ML model on reviewed emails
    predict [--limit N]                Generate predictions for emails
-   
+
 ⚡ ACTION COMMANDS:
    apply [--no-dry-run]               Apply actions to Gmail (default: dry run)
 
 📊 INFORMATION:
    help                               Show this help system
-   
+
 🔍 COMMAND DETAILS:
 
    sync --q "is:unread" --limit 100   # Sync unread emails
@@ -83,11 +88,14 @@ def show_commands_help():
    apply --no-dry-run                 # Actually apply actions
 
 📚 For detailed command documentation, run: python help.py workflow
-""")
+"""
+    )
+
 
 def show_workflow_help():
     """Display workflow guide."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                              Workflow Guide                                 │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -97,7 +105,7 @@ def show_workflow_help():
    Step 1: Setup Gmail Authentication
    ──────────────────────────────────
    • Go to Google Cloud Console
-   • Enable Gmail API  
+   • Enable Gmail API
    • Create OAuth credentials (Desktop app)
    • Download as credentials.json
    • Run: python test_gmail_auth.py
@@ -142,11 +150,14 @@ def show_workflow_help():
    • Use dry-run mode first to preview actions
    • Review model predictions regularly to improve accuracy
    • Check logs/gmail_ml_client.log for troubleshooting
-""")
+"""
+    )
+
 
 def show_api_help():
     """Display API documentation help."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                            REST API Documentation                           │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -158,7 +169,7 @@ def show_api_help():
 
 🔑 AUTHENTICATION:
    X-API-Key: your-api-key-here       # Include in request headers
-   
+
 📡 KEY ENDPOINTS:
 
    GET  /health                       # Check server health
@@ -189,11 +200,14 @@ def show_api_help():
 
 📚 For complete API documentation: python help.py --api
 🌐 Online docs: http://localhost:8000/docs (when server running)
-""")
+"""
+    )
+
 
 def show_setup_help():
     """Display setup and authentication help."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                          Gmail Authentication Setup                         │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -245,11 +259,14 @@ def show_setup_help():
    • Add yourself as test user
 
 📄 For complete setup guide: python help.py --readme
-""")
+"""
+    )
+
 
 def show_config_help():
     """Display configuration help."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                            Configuration Options                            │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -296,11 +313,14 @@ def show_config_help():
 🔄 RELOAD CONFIG:
    Restart application after changing cfg.py
    Some settings require retraining the model
-""")
+"""
+    )
+
 
 def show_troubleshooting_help():
     """Display troubleshooting guide."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                           Troubleshooting Guide                             │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -311,7 +331,7 @@ def show_troubleshooting_help():
    Solution: Download OAuth credentials from Google Cloud Console
    → python help.py setup
 
-   ❌ "Gmail API error: 403" 
+   ❌ "Gmail API error: 403"
    Solution: Enable Gmail API, check credentials validity
    → https://console.cloud.google.com/apis/library/gmail.googleapis.com
 
@@ -335,7 +355,7 @@ def show_troubleshooting_help():
 
    Check Logs:
    logs/gmail_ml_client.log           # Detailed operation logs
-   
+
    Test Components:
    python test_core_functionality.py  # Test core functions
    python test_e2e_functionality.py   # Test full workflows
@@ -376,11 +396,14 @@ def show_troubleshooting_help():
    • CLI_HELP.md - Detailed CLI reference
    • API_DOCS.md - REST API documentation
    • Test files - Validation and examples
-""")
+"""
+    )
+
 
 def show_examples_help():
     """Display usage examples."""
-    print("""
+    print(
+        """
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │                              Usage Examples                                 │
 ╰─────────────────────────────────────────────────────────────────────────────╯
@@ -389,12 +412,12 @@ def show_examples_help():
 
    # Basic sync
    python cli.py sync
-   
+
    # Sync specific emails
    python cli.py sync --q "from:boss@company.com"
    python cli.py sync --q "is:unread newer_than:7d"
    python cli.py sync --q "has:attachment subject:invoice"
-   
+
    # Limited sync
    python cli.py sync --limit 25
 
@@ -404,10 +427,10 @@ def show_examples_help():
    python cli.py sync --limit 100        # Get emails
    python cli.py review --limit 30       # Label emails
    python cli.py train                   # Train model
-   
+
    # Extended training
    python cli.py train --epochs 10
-   
+
    # Retrain after more reviews
    python cli.py review --limit 50       # More training data
    python cli.py train                   # Retrain model
@@ -417,10 +440,10 @@ def show_examples_help():
    # See predictions
    python cli.py predict
    python cli.py predict --limit 100
-   
+
    # Preview actions
    python cli.py apply                   # Safe dry run
-   
+
    # Apply high-confidence actions
    python cli.py apply --no-dry-run
 
@@ -428,7 +451,7 @@ def show_examples_help():
 
    # Create standard labels
    python cli.py ensure-labels
-   
+
    # Review specific emails
    python cli.py review --limit 20
    # During review, use labels: Work, Personal, SPAM, Receipts, etc.
@@ -436,10 +459,10 @@ def show_examples_help():
 🔧 CONFIGURATION EXAMPLES:
 
    Edit cfg.py:
-   
+
    # Adjust spam sensitivity
    THRESHOLDS = {"spam": 0.80, "certain": 0.95}
-   
+
    # Add custom rules
    RULES_INCLUDE = {
        "Finance": ["bank", "credit card", "payment"],
@@ -450,7 +473,7 @@ def show_examples_help():
 
    # Check application logs
    tail -f logs/gmail_ml_client.log
-   
+
    # Database inspection
    sqlite3 state.db
    .tables
@@ -477,11 +500,11 @@ def show_examples_help():
 
    # Start API server
    python api.py
-   
+
    # Use API (curl examples)
    curl http://localhost:8000/health
    curl -H "X-API-Key: key" http://localhost:8000/api/emails
-   
+
    # Python API client
    import requests
    headers = {"X-API-Key": "your-key"}
@@ -494,42 +517,44 @@ def show_examples_help():
    python cli.py sync --q "newer_than:1d" --limit 50
    python cli.py predict --limit 50
    python cli.py apply --no-dry-run
-   
+
    # Focus on specific sender
    python cli.py sync --q "from:important@client.com"
    python cli.py review --limit 10
    python cli.py train
-   
+
    # Bulk cleanup
    python cli.py sync --q "older_than:30d is:unread" --limit 1000
    python cli.py apply --no-dry-run
-""")
+"""
+    )
+
 
 def open_documentation(doc_type):
     """Open documentation files or web resources."""
     project_root = Path(__file__).parent
-    
+
     docs = {
-        'readme': project_root / 'README.md',
-        'cli': project_root / 'CLI_HELP.md', 
-        'api': project_root / 'API_DOCS.md',
-        'architecture': project_root / 'ARCHITECTURE.md',
-        'tests': project_root / 'FINAL_TEST_VALIDATION_REPORT.md'
+        "readme": project_root / "README.md",
+        "cli": project_root / "CLI_HELP.md",
+        "api": project_root / "API_DOCS.md",
+        "architecture": project_root / "ARCHITECTURE.md",
+        "tests": project_root / "FINAL_TEST_VALIDATION_REPORT.md",
     }
-    
-    if doc_type == 'web':
+
+    if doc_type == "web":
         # Try to open local API docs if server is running
         try:
-            webbrowser.open('http://localhost:8000/docs')
+            webbrowser.open("http://localhost:8000/docs")
             print("🌐 Opened API documentation in browser")
         except:
             print("❌ Could not open browser. Start API server first: python api.py")
     elif doc_type in docs:
         doc_path = docs[doc_type]
         if doc_path.exists():
-            if sys.platform.startswith('win'):
+            if sys.platform.startswith("win"):
                 os.startfile(doc_path)
-            elif sys.platform.startswith('darwin'):
+            elif sys.platform.startswith("darwin"):
                 os.system(f'open "{doc_path}"')
             else:
                 os.system(f'xdg-open "{doc_path}"')
@@ -539,32 +564,33 @@ def open_documentation(doc_type):
     else:
         print(f"❌ Unknown documentation type: {doc_type}")
 
+
 def main():
     """Main help system entry point."""
     if len(sys.argv) < 2:
         show_main_help()
         return
-    
+
     topic = sys.argv[1].lower()
-    
+
     # Handle web/file opening flags
-    if topic.startswith('--'):
+    if topic.startswith("--"):
         doc_type = topic[2:]  # Remove --
         open_documentation(doc_type)
         return
-    
+
     # Handle help topics
     help_topics = {
-        'commands': show_commands_help,
-        'workflow': show_workflow_help,
-        'api': show_api_help,
-        'setup': show_setup_help,
-        'config': show_config_help,
-        'trouble': show_troubleshooting_help,
-        'troubleshooting': show_troubleshooting_help,
-        'examples': show_examples_help,
+        "commands": show_commands_help,
+        "workflow": show_workflow_help,
+        "api": show_api_help,
+        "setup": show_setup_help,
+        "config": show_config_help,
+        "trouble": show_troubleshooting_help,
+        "troubleshooting": show_troubleshooting_help,
+        "examples": show_examples_help,
     }
-    
+
     if topic in help_topics:
         help_topics[topic]()
     else:
@@ -573,6 +599,7 @@ def main():
         for topic_name in help_topics.keys():
             print(f"   {topic_name}")
         print("\nOr use flags: --web, --readme, --cli, --api")
+
 
 if __name__ == "__main__":
     main()

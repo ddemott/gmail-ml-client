@@ -537,24 +537,24 @@
   .gmail-client-app {
     padding: 12px;
   }
-  
+
   .tab-nav {
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .action-controls {
     grid-template-columns: 1fr;
   }
-  
+
   .action-buttons {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .prediction-details {
     grid-template-columns: 1fr;
   }

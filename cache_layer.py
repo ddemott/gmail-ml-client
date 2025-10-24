@@ -2,27 +2,28 @@
 Caching layer for improved performance and reduced API calls.
 Provides in-memory and persistent caching with TTL and invalidation strategies.
 """
-from __future__ import annotations
+
+import hashlib
 import json
 import pickle
-import hashlib
+import threading
 import time
-from typing import Any, Optional, Dict, List, Union, Callable, TypeVar, Generic
-from dataclasses import dataclass, field
-from pathlib import Path
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-import threading
 from functools import wraps
+from pathlib import Path
+from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 from logger import logger
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class CacheStrategy(Enum):
     """Cache eviction strategies."""
+
     LRU = "lru"  # Least Recently Used
     LFU = "lfu"  # Least Frequently Used
     TTL = "ttl"  # Time To Live
@@ -32,24 +33,25 @@ class CacheStrategy(Enum):
 @dataclass
 class CacheEntry(Generic[T]):
     """Represents a cached item with metadata."""
+
     value: T
     created_at: datetime
     accessed_at: datetime
     access_count: int = 0
     ttl_seconds: Optional[int] = None
-    
+
     def __post_init__(self):
         self.access_count += 1
         self.accessed_at = datetime.utcnow()
-    
+
     def is_expired(self) -> bool:
         """Check if the cache entry has expired."""
         if self.ttl_seconds is None:
             return False
-        
+
         expiry_time = self.created_at + timedelta(seconds=self.ttl_seconds)
         return datetime.utcnow() > expiry_time
-    
+
     def touch(self) -> None:
         """Update access metadata."""
         self.access_count += 1
@@ -58,32 +60,32 @@ class CacheEntry(Generic[T]):
 
 class CacheBackend(ABC, Generic[T]):
     """Abstract base class for cache backends."""
-    
+
     @abstractmethod
     def get(self, key: str) -> Optional[CacheEntry[T]]:
         """Retrieve a cache entry."""
         pass
-    
+
     @abstractmethod
     def put(self, key: str, value: T, ttl_seconds: Optional[int] = None) -> None:
         """Store a cache entry."""
         pass
-    
+
     @abstractmethod
     def delete(self, key: str) -> bool:
         """Delete a cache entry."""
         pass
-    
+
     @abstractmethod
     def clear(self) -> None:
         """Clear all cache entries."""
         pass
-    
+
     @abstractmethod
     def keys(self) -> List[str]:
         """Get all cache keys."""
         pass
-    
+
     @abstractmethod
     def size(self) -> int:
         """Get cache size."""
@@ -92,27 +94,27 @@ class CacheBackend(ABC, Generic[T]):
 
 class MemoryCacheBackend(CacheBackend[T]):
     """In-memory cache backend with configurable eviction strategies."""
-    
+
     def __init__(self, max_size: int = 1000, strategy: CacheStrategy = CacheStrategy.LRU):
         self.max_size = max_size
         self.strategy = strategy
         self._cache: Dict[str, CacheEntry[T]] = {}
         self._lock = threading.RLock()
-    
+
     def get(self, key: str) -> Optional[CacheEntry[T]]:
         """Retrieve a cache entry."""
         with self._lock:
             entry = self._cache.get(key)
             if entry is None:
                 return None
-            
+
             if entry.is_expired():
                 del self._cache[key]
                 return None
-            
+
             entry.touch()
             return entry
-    
+
     def put(self, key: str, value: T, ttl_seconds: Optional[int] = None) -> None:
         """Store a cache entry."""
         with self._lock:
@@ -122,40 +124,40 @@ class MemoryCacheBackend(CacheBackend[T]):
                 created_at=datetime.utcnow(),
                 accessed_at=datetime.utcnow(),
                 access_count=1,
-                ttl_seconds=ttl_seconds
+                ttl_seconds=ttl_seconds,
             )
-            
+
             # Check if we need to evict entries
             if key not in self._cache and len(self._cache) >= self.max_size:
                 self._evict_entry()
-            
+
             self._cache[key] = entry
-    
+
     def delete(self, key: str) -> bool:
         """Delete a cache entry."""
         with self._lock:
             return self._cache.pop(key, None) is not None
-    
+
     def clear(self) -> None:
         """Clear all cache entries."""
         with self._lock:
             self._cache.clear()
-    
+
     def keys(self) -> List[str]:
         """Get all cache keys."""
         with self._lock:
             return list(self._cache.keys())
-    
+
     def size(self) -> int:
         """Get cache size."""
         with self._lock:
             return len(self._cache)
-    
+
     def _evict_entry(self) -> None:
         """Evict an entry based on the configured strategy."""
         if not self._cache:
             return
-        
+
         if self.strategy == CacheStrategy.LRU:
             # Remove least recently used
             oldest_key = min(self._cache.keys(), key=lambda k: self._cache[k].accessed_at)
@@ -180,66 +182,66 @@ class MemoryCacheBackend(CacheBackend[T]):
 
 class FileCacheBackend(CacheBackend[T]):
     """File-based persistent cache backend."""
-    
+
     def __init__(self, cache_dir: str = ".cache", max_files: int = 10000):
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
         self.max_files = max_files
         self._lock = threading.RLock()
-    
+
     def _get_file_path(self, key: str) -> Path:
         """Get file path for cache key."""
         key_hash = hashlib.sha256(key.encode()).hexdigest()
         return self.cache_dir / f"{key_hash}.cache"
-    
+
     def get(self, key: str) -> Optional[CacheEntry[T]]:
         """Retrieve a cache entry from file."""
         with self._lock:
             file_path = self._get_file_path(key)
             if not file_path.exists():
                 return None
-            
+
             try:
-                with open(file_path, 'rb') as f:
+                with open(file_path, "rb") as f:
                     entry = pickle.load(f)
-                
+
                 if entry.is_expired():
                     file_path.unlink(missing_ok=True)
                     return None
-                
+
                 entry.touch()
                 # Save updated access metadata
-                with open(file_path, 'wb') as f:
+                with open(file_path, "wb") as f:
                     pickle.dump(entry, f)
-                
+
                 return entry
             except Exception as e:
                 logger.warning(f"Failed to load cache entry for key {key}: {e}")
                 file_path.unlink(missing_ok=True)
                 return None
-    
+
     def put(self, key: str, value: T, ttl_seconds: Optional[int] = None) -> None:
         """Store a cache entry to file."""
         with self._lock:
             # Check if we need to evict files
             if self.size() >= self.max_files:
                 self._evict_files()
-            
+
             entry = CacheEntry(
                 value=value,
                 created_at=datetime.utcnow(),
                 accessed_at=datetime.utcnow(),
                 access_count=1,
-                ttl_seconds=ttl_seconds
+                ttl_seconds=ttl_seconds,
             )
-            
+
             file_path = self._get_file_path(key)
             try:
-                with open(file_path, 'wb') as f:
+                with open(file_path, "wb") as f:
                     pickle.dump(entry, f)
             except Exception as e:
                 logger.error(f"Failed to save cache entry for key {key}: {e}")
-    
+
     def delete(self, key: str) -> bool:
         """Delete a cache entry file."""
         with self._lock:
@@ -248,23 +250,23 @@ class FileCacheBackend(CacheBackend[T]):
                 file_path.unlink()
                 return True
             return False
-    
+
     def clear(self) -> None:
         """Clear all cache files."""
         with self._lock:
             for cache_file in self.cache_dir.glob("*.cache"):
                 cache_file.unlink(missing_ok=True)
-    
+
     def keys(self) -> List[str]:
         """Get all cache keys (this is expensive for file cache)."""
         # Note: This is not efficient for file cache as we'd need to reverse hash
         # In practice, you might want to maintain a separate index file
         return [f.stem for f in self.cache_dir.glob("*.cache")]
-    
+
     def size(self) -> int:
         """Get cache size (number of files)."""
         return len(list(self.cache_dir.glob("*.cache")))
-    
+
     def _evict_files(self) -> None:
         """Evict old cache files."""
         cache_files = list(self.cache_dir.glob("*.cache"))
@@ -278,44 +280,46 @@ class FileCacheBackend(CacheBackend[T]):
 
 class CacheManager:
     """Manages multiple cache layers and provides high-level caching operations."""
-    
+
     def __init__(self):
         self._backends: Dict[str, CacheBackend] = {}
         self._default_backend = "memory"
         self._lock = threading.RLock()
-    
+
     def add_backend(self, name: str, backend: CacheBackend, is_default: bool = False) -> None:
         """Add a cache backend."""
         with self._lock:
             self._backends[name] = backend
             if is_default or not self._backends:
                 self._default_backend = name
-    
+
     def get(self, key: str, backend: Optional[str] = None) -> Optional[Any]:
         """Get value from cache."""
         backend_name = backend or self._default_backend
         if backend_name not in self._backends:
             raise ValueError(f"Unknown cache backend: {backend_name}")
-        
+
         entry = self._backends[backend_name].get(key)
         return entry.value if entry else None
-    
-    def put(self, key: str, value: Any, ttl_seconds: Optional[int] = None, backend: Optional[str] = None) -> None:
+
+    def put(
+        self, key: str, value: Any, ttl_seconds: Optional[int] = None, backend: Optional[str] = None
+    ) -> None:
         """Put value into cache."""
         backend_name = backend or self._default_backend
         if backend_name not in self._backends:
             raise ValueError(f"Unknown cache backend: {backend_name}")
-        
+
         self._backends[backend_name].put(key, value, ttl_seconds)
-    
+
     def delete(self, key: str, backend: Optional[str] = None) -> bool:
         """Delete value from cache."""
         backend_name = backend or self._default_backend
         if backend_name not in self._backends:
             return False
-        
+
         return self._backends[backend_name].delete(key)
-    
+
     def clear(self, backend: Optional[str] = None) -> None:
         """Clear cache."""
         if backend:
@@ -325,37 +329,36 @@ class CacheManager:
             # Clear all backends
             for backend_instance in self._backends.values():
                 backend_instance.clear()
-    
+
     def get_stats(self) -> Dict[str, Dict[str, Any]]:
         """Get cache statistics."""
         stats = {}
         for name, backend in self._backends.items():
-            stats[name] = {
-                'size': backend.size(),
-                'type': backend.__class__.__name__
-            }
+            stats[name] = {"size": backend.size(), "type": backend.__class__.__name__}
         return stats
 
 
 class CacheNamespace:
     """Provides namespaced access to cache with automatic key prefixing."""
-    
+
     def __init__(self, cache_manager: CacheManager, namespace: str):
         self.cache_manager = cache_manager
         self.namespace = namespace
-    
+
     def _make_key(self, key: str) -> str:
         """Create namespaced key."""
         return f"{self.namespace}:{key}"
-    
+
     def get(self, key: str, backend: Optional[str] = None) -> Optional[Any]:
         """Get value from cache with namespace."""
         return self.cache_manager.get(self._make_key(key), backend)
-    
-    def put(self, key: str, value: Any, ttl_seconds: Optional[int] = None, backend: Optional[str] = None) -> None:
+
+    def put(
+        self, key: str, value: Any, ttl_seconds: Optional[int] = None, backend: Optional[str] = None
+    ) -> None:
         """Put value into cache with namespace."""
         self.cache_manager.put(self._make_key(key), value, ttl_seconds, backend)
-    
+
     def delete(self, key: str, backend: Optional[str] = None) -> bool:
         """Delete value from cache with namespace."""
         return self.cache_manager.delete(self._make_key(key), backend)
@@ -365,15 +368,15 @@ def cached(
     ttl_seconds: Optional[int] = None,
     backend: Optional[str] = None,
     key_func: Optional[Callable] = None,
-    cache_manager: Optional[CacheManager] = None
+    cache_manager: Optional[CacheManager] = None,
 ):
     """Decorator for caching function results."""
-    
+
     def decorator(func: Callable) -> Callable:
         nonlocal cache_manager
         if cache_manager is None:
             cache_manager = get_default_cache_manager()
-        
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Generate cache key
@@ -385,21 +388,22 @@ def cached(
                 key_parts.extend(str(arg) for arg in args)
                 key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
                 cache_key = hashlib.sha256(":".join(key_parts).encode()).hexdigest()
-            
+
             # Try to get from cache
             cached_result = cache_manager.get(cache_key, backend)
             if cached_result is not None:
                 logger.debug(f"Cache hit for {func.__name__}")
                 return cached_result
-            
+
             # Compute result and cache it
             logger.debug(f"Cache miss for {func.__name__}")
             result = func(*args, **kwargs)
             cache_manager.put(cache_key, result, ttl_seconds, backend)
-            
+
             return result
-        
+
         return wrapper
+
     return decorator
 
 
@@ -412,14 +416,14 @@ def get_default_cache_manager() -> CacheManager:
     global _default_cache_manager
     if _default_cache_manager is None:
         _default_cache_manager = CacheManager()
-        
+
         # Add default backends
         memory_backend = MemoryCacheBackend(max_size=1000)
         file_backend = FileCacheBackend()
-        
+
         _default_cache_manager.add_backend("memory", memory_backend, is_default=True)
         _default_cache_manager.add_backend("file", file_backend)
-    
+
     return _default_cache_manager
 
 
@@ -456,15 +460,21 @@ def get_cached_prediction(email_id: str) -> Optional[Dict[str, Any]]:
     return prediction_cache.get(email_id)
 
 
-def cache_gmail_api_response(endpoint: str, params: Dict[str, Any], response: Any, ttl_seconds: int = 300) -> None:
+def cache_gmail_api_response(
+    endpoint: str, params: Dict[str, Any], response: Any, ttl_seconds: int = 300
+) -> None:
     """Cache Gmail API response."""
-    cache_key = f"{endpoint}:{hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()}"
+    cache_key = (
+        f"{endpoint}:{hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()}"
+    )
     gmail_api_cache.put(cache_key, response, ttl_seconds)
 
 
 def get_cached_gmail_api_response(endpoint: str, params: Dict[str, Any]) -> Optional[Any]:
     """Get cached Gmail API response."""
-    cache_key = f"{endpoint}:{hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()}"
+    cache_key = (
+        f"{endpoint}:{hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()}"
+    )
     return gmail_api_cache.get(cache_key)
 
 

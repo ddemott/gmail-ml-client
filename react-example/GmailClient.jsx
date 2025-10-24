@@ -25,12 +25,12 @@ class GmailClientAPI {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || `HTTP ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error(`API Error (${endpoint}):`, error);
@@ -318,10 +318,10 @@ const GmailClientApp = () => {
                     <div key={label} className="label-bar">
                       <span className="label-name">{label}</span>
                       <div className="bar-container">
-                        <div 
-                          className="bar-fill" 
-                          style={{ 
-                            width: `${(count / trainingStats.total_samples) * 100}%` 
+                        <div
+                          className="bar-fill"
+                          style={{
+                            width: `${(count / trainingStats.total_samples) * 100}%`
                           }}
                         />
                       </div>
@@ -349,17 +349,17 @@ const GmailClientApp = () => {
                   <div key={prediction.id} className="prediction-card">
                     <div className="prediction-header">
                       <span className="message-id">#{prediction.id.slice(-8)}</span>
-                      <span 
+                      <span
                         className="action-badge"
                         style={{ backgroundColor: getActionColor(prediction.action) }}
                       >
                         {prediction.action.toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="prediction-content">
                       <p className="snippet">{prediction.snippet}</p>
-                      
+
                       <div className="prediction-details">
                         <div className="detail-item">
                           <label>Spam Score:</label>
@@ -383,7 +383,7 @@ const GmailClientApp = () => {
                     </div>
 
                     <div className="review-actions">
-                      <select 
+                      <select
                         onChange={(e) => e.target.value && handleReview(prediction.id, e.target.value)}
                         defaultValue=""
                       >
@@ -412,15 +412,15 @@ const GmailClientApp = () => {
         {activeTab === 'training' && (
           <div className="training-tab">
             <h2>Model Training</h2>
-            
+
             {trainingStats && (
               <div className="training-status">
                 <h3>Training Data Status</h3>
                 <p>
-                  You have <strong>{trainingStats.total_samples}</strong> labeled samples 
+                  You have <strong>{trainingStats.total_samples}</strong> labeled samples
                   across <strong>{trainingStats.unique_labels}</strong> different labels.
                 </p>
-                
+
                 {trainingStats.total_samples < 50 && (
                   <div className="warning">
                     ⚠️ Consider adding more training data for better accuracy (recommended: 50+ samples per label)
@@ -430,14 +430,14 @@ const GmailClientApp = () => {
             )}
 
             <div className="training-actions">
-              <button 
-                onClick={handleTrain} 
+              <button
+                onClick={handleTrain}
                 disabled={loading || !trainingStats || trainingStats.total_samples < 10}
                 className="primary-button"
               >
                 {loading ? '🧠 Training...' : '🧠 Train Model'}
               </button>
-              
+
               <button onClick={loadTrainingStats} disabled={loading}>
                 📊 Refresh Stats
               </button>
@@ -458,7 +458,7 @@ const GmailClientApp = () => {
         {activeTab === 'actions' && (
           <div className="actions-tab">
             <h2>Apply Actions</h2>
-            
+
             <div className="action-controls">
               <div className="dry-run-section">
                 <h3>Test Run (Safe)</h3>
@@ -471,8 +471,8 @@ const GmailClientApp = () => {
               <div className="live-run-section">
                 <h3>Live Run (Careful!)</h3>
                 <p>Actually apply actions to your Gmail account. This will move/delete emails.</p>
-                <button 
-                  onClick={() => handleApply(false)} 
+                <button
+                  onClick={() => handleApply(false)}
                   disabled={loading}
                   className="danger-button"
                 >

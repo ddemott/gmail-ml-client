@@ -19,7 +19,7 @@ python cli.py init
 
 **What it does:**
 - Creates and initializes the local SQLite database
-- Tests Gmail API authentication 
+- Tests Gmail API authentication
 - Verifies OAuth credentials are working
 - Creates necessary model directories
 
@@ -290,7 +290,7 @@ Applied=0 (dry_run=True)
 # Actual application
 Moved msg_12345 to trash
 Routed msg_67890 to Work
-Routed msg_54321 to Receipts  
+Routed msg_54321 to Receipts
 Applied=3 (dry_run=False)
 ```
 
@@ -425,7 +425,7 @@ Check `logs/gmail_ml_client.log` for detailed error information and debugging ou
 - Limit sync size for faster operations
 - Run sync regularly rather than large batches
 
-### Training Performance  
+### Training Performance
 - Start with 50-100 reviewed emails minimum
 - Ensure balanced representation of all labels
 - Use reasonable epoch counts (6-10 typically sufficient)
@@ -462,7 +462,7 @@ python cli.py apply --no-dry-run
 # daily-email-process.ps1
 Set-Location "C:\path\to\gmail-client"
 & .\.venv\Scripts\python.exe cli.py sync
-& .\.venv\Scripts\python.exe cli.py predict  
+& .\.venv\Scripts\python.exe cli.py predict
 & .\.venv\Scripts\python.exe cli.py apply --no-dry-run
 ```
 

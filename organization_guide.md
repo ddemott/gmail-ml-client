@@ -43,7 +43,7 @@
 - **[Gmail]/TikTok** (0 emails)
 - Many others with very few emails
 
-## 🎯 **Priority Actions** 
+## 🎯 **Priority Actions**
 
 ### **HIGH PRIORITY** - These are important categories that need more emails:
 
@@ -51,7 +51,7 @@
    - Search for: "bill", "payment due", "statement", "invoice", "utility"
    - Look for: Electric bills, gas bills, water bills, phone bills, credit card statements
 
-2. **[Gmail]/Amazon** (17 emails) → Target: 30+ emails  
+2. **[Gmail]/Amazon** (17 emails) → Target: 30+ emails
    - Search for: "from:amazon.com", "order confirmation", "shipped", "delivery"
 
 3. **[Gmail]/AI** (0 emails) → Target: 20+ emails
