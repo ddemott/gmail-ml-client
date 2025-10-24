@@ -74,9 +74,7 @@ def main():
         if choice == "1":
             # Test Gmail Authentication
             python_exe = get_python_executable()
-            run_command(
-                f'{python_exe} test_gmail_auth.py', "Testing Gmail Authentication"
-            )
+            run_command(f"{python_exe} test_gmail_auth.py", "Testing Gmail Authentication")
 
         elif choice == "2":
             # Start REST API Server
@@ -124,7 +122,7 @@ def main():
             # Run All Tests
             python_exe = get_python_executable()
             run_command(
-                f'{python_exe} -m pytest test_solid.py test_core_functionality.py test_e2e_functionality.py -v',
+                f"{python_exe} -m pytest test_solid.py test_core_functionality.py test_e2e_functionality.py -v",
                 "Running All Tests",
             )
 

@@ -29,10 +29,10 @@ from test_mocks import (
     MockTextProcessor,
 )
 from testable_services import (
-    ServiceResult,
     ActionService,
     GmailService,
     PredictionService,
+    ServiceResult,
     TrainingService,
 )
 

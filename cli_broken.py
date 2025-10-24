@@ -204,7 +204,7 @@ def apply(execute: bool = typer.Option(False, help="Execute actions (default: dr
     """Apply actions to Gmail (trash or route+archive). Default is DRY RUN. Use --execute to actually apply."""
     # Handle CliRunner inconsistencies: sometimes strings, sometimes None/bool
     if isinstance(execute, str):
-        execute = execute.lower() in ('true', '1', 'yes', 'on')
+        execute = execute.lower() in ("true", "1", "yes", "on")
     elif execute is None:
         execute = True  # Flag present
     # else: execute is already bool (False when flag absent)

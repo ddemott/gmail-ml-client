@@ -43,14 +43,15 @@ class TestDataStore:
         def mock_upsert_message(msg_id: str, snippet: str, text: str) -> None:
             """Mock upsert_message that matches data_store signature."""
             from interfaces import EmailMessage
+
             message = EmailMessage(
                 id=msg_id,
                 subject="",  # Not needed for this test
-                sender="",   # Not needed for this test
+                sender="",  # Not needed for this test
                 body=text,
-                labels=[],   # Not needed for this test
+                labels=[],  # Not needed for this test
                 timestamp=datetime.now(),
-                snippet=snippet
+                snippet=snippet,
             )
             self.mock_db.store_messages([message])
 
@@ -134,6 +135,7 @@ class TestDataStore:
 
         # Insert initial message
         from interfaces import EmailMessage
+
         message1 = EmailMessage(
             id=message_id,
             subject="Test",
@@ -141,7 +143,7 @@ class TestDataStore:
             body="Original text",
             labels=["INBOX"],
             timestamp=datetime.now(),
-            snippet="Original snippet"
+            snippet="Original snippet",
         )
         self.mock_db.store_messages([message1])
 
@@ -161,6 +163,7 @@ class TestDataStore:
 
         # First insert a message
         from interfaces import EmailMessage
+
         message = EmailMessage(
             id=message_id,
             subject="Test",
@@ -168,7 +171,7 @@ class TestDataStore:
             body="Test text",
             labels=["INBOX"],
             timestamp=datetime.now(),
-            snippet="Test snippet"
+            snippet="Test snippet",
         )
         self.mock_db.store_messages([message])
 
@@ -194,7 +197,7 @@ class TestDataStore:
             body="Reviewed content",
             labels=["INBOX"],
             timestamp=datetime.now(),
-            snippet="Reviewed"
+            snippet="Reviewed",
         )
         data_store.upsert_message("reviewed_msg", "Reviewed", "Reviewed content")
         self.mock_db.mark_message_reviewed("reviewed_msg", "SPAM")
@@ -206,7 +209,7 @@ class TestDataStore:
             body="Unreviewed content",
             labels=["INBOX"],
             timestamp=datetime.now(),
-            snippet="Unreviewed"
+            snippet="Unreviewed",
         )
         data_store.upsert_message("unreviewed_msg", "Unreviewed", "Unreviewed content")
 
@@ -227,7 +230,7 @@ class TestDataStore:
             body="Work content",
             labels=["Work"],
             timestamp=datetime.now(),
-            snippet="Work email"
+            snippet="Work email",
         )
         msg2 = EmailMessage(
             id="msg2",
@@ -236,7 +239,7 @@ class TestDataStore:
             body="Spam content",
             labels=["SPAM"],
             timestamp=datetime.now(),
-            snippet="Spam email"
+            snippet="Spam email",
         )
 
         data_store.upsert_message("msg1", "Work email", "Work content")

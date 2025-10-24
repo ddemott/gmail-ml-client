@@ -3,6 +3,7 @@ import sys
 from typing import Optional
 
 import typer
+
 # from rich import box, print
 # from rich.table import Table
 from tqdm import tqdm
@@ -22,7 +23,9 @@ from preprocessor import extract_text
 from sorter import propose
 from trainer import train_from_feedback
 
-app = typer.Typer(help="Gmail ML Client - trainable spam filter and auto sorter", rich_markup_mode=None)
+app = typer.Typer(
+    help="Gmail ML Client - trainable spam filter and auto sorter", rich_markup_mode=None
+)
 
 
 @app.command()
@@ -128,10 +131,14 @@ def predict(limit: int = typer.Option(50, "--limit", help="Maximum messages to p
         return
     print("Proposed Actions")
     print("-" * 80)
-    print(f"{'ID':<20} {'Action':<8} {'Spam':<6} {'Conf':<6} {'Label':<12} {'Target':<12} {'Snippet'}")
+    print(
+        f"{'ID':<20} {'Action':<8} {'Spam':<6} {'Conf':<6} {'Label':<12} {'Target':<12} {'Snippet'}"
+    )
     print("-" * 80)
     for a in acts:
-        print(f"{a['id']:<20} {a['action']:<8} {a['spam_score']:<6.2f} {a['conf']:<6.2f} {str(a['pred_label'] or '-'):12} {str(a['target'] or '-'):12} {a['snippet'] or ''}")
+        print(
+            f"{a['id']:<20} {a['action']:<8} {a['spam_score']:<6.2f} {a['conf']:<6.2f} {str(a['pred_label'] or '-'):12} {str(a['target'] or '-'):12} {a['snippet'] or ''}"
+        )
     print("-" * 80)
 
 

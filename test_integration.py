@@ -21,12 +21,7 @@ import preprocessor
 import sorter
 import trainer
 from interfaces import Interfaces, configure_dependencies_for_testing, get_dependency
-from testable_services import (
-    ActionService,
-    GmailService,
-    PredictionService,
-    TrainingService,
-)
+from testable_services import ActionService, GmailService, PredictionService, TrainingService
 
 
 class TestDataStorePersistence:
@@ -38,6 +33,7 @@ class TestDataStorePersistence:
         self.temp_dir = tempfile.mkdtemp()
         self.db_path = os.path.join(self.temp_dir, "test.db")
         import cfg
+
         cfg.DB_PATH = self.db_path
         data_store.init_db()
 
@@ -110,6 +106,7 @@ class TestEmailProcessingWorkflow:
         self.temp_dir = tempfile.mkdtemp()
         self.db_path = os.path.join(self.temp_dir, "test.db")
         import cfg
+
         cfg.DB_PATH = self.db_path
         data_store.init_db()
 
@@ -133,9 +130,9 @@ class TestEmailProcessingWorkflow:
                         "mimeType": "text/plain",
                         "body": {
                             "data": "SW1wb3J0YW50IHdvcmsgdXBkYXRlIGFib3V0IHRoZSBwcm9qZWN0"  # "Important work update about the project"
-                        }
+                        },
                     }
-                ]
+                ],
             },
             "snippet": "Important work update...",
         }
@@ -169,8 +166,8 @@ class TestEmailProcessingWorkflow:
         # Mock model predictions - predict returns (labels, conf, spam_scores)
         mock_predict.return_value = (
             ["Work", "SPAM"],  # labels
-            [0.9, 0.95],      # confidence scores
-            [0.1, 0.95]       # spam scores
+            [0.9, 0.95],  # confidence scores
+            [0.1, 0.95],  # spam scores
         )
 
         # Run predictions
@@ -246,9 +243,7 @@ class TestTestableServicesIntegration:
             self.gmail_api.add_test_message(msg)
 
         # 2. Sync emails using GmailService
-        gmail_service = GmailService(
-            self.gmail_api, self.database, self.config, self.logger
-        )
+        gmail_service = GmailService(self.gmail_api, self.database, self.config, self.logger)
 
         init_result = gmail_service.initialize()
         assert init_result.success
@@ -305,7 +300,7 @@ class TestTestableServicesIntegration:
 
         # Initialize database
         self.database.initialize("test.db")
-        
+
         # Configure minimum samples for testing
         self.config.set("training.min_samples_per_label", 2)
 
@@ -398,9 +393,7 @@ class TestTestableServicesIntegration:
         from interfaces import EmailMessage
 
         # 1. Initialize Gmail service
-        gmail_service = GmailService(
-            self.gmail_api, self.database, self.config, self.logger
-        )
+        gmail_service = GmailService(self.gmail_api, self.database, self.config, self.logger)
 
         init_result = gmail_service.initialize()
         assert init_result.success
@@ -489,9 +482,7 @@ class TestTestableServicesIntegration:
         assert predict_result.data["successful_predictions"] == 2
 
         # 7. Apply actions based on predictions
-        action_service = ActionService(
-            self.gmail_api, self.database, self.config, self.logger
-        )
+        action_service = ActionService(self.gmail_api, self.database, self.config, self.logger)
 
         # First do a dry run
         dry_run_result = action_service.apply_actions(dry_run=True, limit=10)

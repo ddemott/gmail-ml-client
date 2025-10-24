@@ -53,7 +53,12 @@ def test_cli_commands():
 
     # Test train command (should fail gracefully with no data)
     success, output, error = run_cli_command(["train"])
-    if "no data" in error.lower() or "insufficient" in error.lower() or "too few" in error.lower() or success:
+    if (
+        "no data" in error.lower()
+        or "insufficient" in error.lower()
+        or "too few" in error.lower()
+        or success
+    ):
         print("✓ train command handles no data appropriately")
     else:
         print(f"! train command failed: {error}")
@@ -61,7 +66,12 @@ def test_cli_commands():
 
     # Test predict command
     success, output, error = run_cli_command(["predict"])
-    if success or "no messages" in output.lower() or "codec" in error.lower() or "encode" in error.lower():
+    if (
+        success
+        or "no messages" in output.lower()
+        or "codec" in error.lower()
+        or "encode" in error.lower()
+    ):
         print("✓ predict command works")
     else:
         print(f"! predict command failed: {error}")

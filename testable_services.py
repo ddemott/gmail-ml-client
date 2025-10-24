@@ -451,7 +451,11 @@ class ActionService:
 
                     # Simulate checking prediction confidence
                     # In real implementation, would get from database.get_prediction(message.id)
-                    if "spam" in message.subject.lower() or "prize" in message.subject.lower() or "claim" in message.body.lower():
+                    if (
+                        "spam" in message.subject.lower()
+                        or "prize" in message.subject.lower()
+                        or "claim" in message.body.lower()
+                    ):
                         confidence = 0.9
                         if confidence >= spam_threshold:
                             action_taken = "trash"
@@ -461,10 +465,19 @@ class ActionService:
                                     applied_count += 1
                                 else:
                                     failed_count += 1
-                    elif any(label in ["Work", "Personal", "Finance"] for label in message.labels) or "meeting" in message.subject.lower() or "team" in message.body.lower():
+                    elif (
+                        any(label in ["Work", "Personal", "Finance"] for label in message.labels)
+                        or "meeting" in message.subject.lower()
+                        or "team" in message.body.lower()
+                    ):
                         confidence = 0.95
                         if confidence >= certain_threshold:
-                            target_label = "Work" if "meeting" in message.subject.lower() or "team" in message.body.lower() else (message.labels[0] if message.labels else "Personal")
+                            target_label = (
+                                "Work"
+                                if "meeting" in message.subject.lower()
+                                or "team" in message.body.lower()
+                                else (message.labels[0] if message.labels else "Personal")
+                            )
                             action_taken = f"route_to_{target_label}"
                             if not dry_run:
                                 success = gmail_api.modify_message_labels(

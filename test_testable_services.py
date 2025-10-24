@@ -21,10 +21,10 @@ from interfaces import (
     get_dependency,
 )
 from testable_services import (
-    ServiceResult,
     ActionService,
     GmailService,
     PredictionService,
+    ServiceResult,
     TrainingService,
 )
 
@@ -396,9 +396,7 @@ class TestIntegrationWorkflows(TestTestableServicesWithMocks):
             self.gmail_api.add_test_message(msg)
 
         # Step 1: Initialize and sync emails
-        gmail_service = GmailService(
-            self.gmail_api, self.database, self.config, self.logger
-        )
+        gmail_service = GmailService(self.gmail_api, self.database, self.config, self.logger)
 
         init_result = gmail_service.initialize()
         assert init_result.success
@@ -440,9 +438,7 @@ class TestIntegrationWorkflows(TestTestableServicesWithMocks):
         assert predict_result.data == []
 
         # Step 5: Apply actions
-        action_service = ActionService(
-            self.gmail_api, self.database, self.config, self.logger
-        )
+        action_service = ActionService(self.gmail_api, self.database, self.config, self.logger)
 
         apply_result = action_service.apply_actions(dry_run=True, limit=10)
         assert apply_result.success
@@ -459,9 +455,7 @@ class TestIntegrationWorkflows(TestTestableServicesWithMocks):
         # Test Gmail API failure
         self.gmail_api.set_should_fail(True)
 
-        gmail_service = GmailService(
-            self.gmail_api, self.database, self.config, self.logger
-        )
+        gmail_service = GmailService(self.gmail_api, self.database, self.config, self.logger)
 
         init_result = gmail_service.initialize()
         assert not init_result.success

@@ -21,6 +21,7 @@ _current_db_path = None
 def get_db_path() -> str:
     """Get the current database path from config."""
     from cfg import DB_PATH
+
     return DB_PATH
 
 
