@@ -12,8 +12,12 @@ def run_cli_command(cmd):
     """Run a CLI command and return (success, output, error)."""
     try:
         # Use the virtual environment python
+        env = os.environ.copy()
+        env["PYTHONPATH"] = "d:\\development\\Workspaces\\PythonWorkspace\\GmailClient"
         full_cmd = [".venv/Scripts/python.exe", "scripts/cli.py"] + cmd
-        result = subprocess.run(full_cmd, capture_output=True, text=True, cwd=".", timeout=30)
+        result = subprocess.run(
+            full_cmd, capture_output=True, text=True, cwd=".", env=env, timeout=30
+        )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
@@ -55,15 +59,16 @@ def test_cli_commands():
         print(f"! sync command failed: {error}")
         assert False, f"sync command failed unexpectedly: {error}"
 
-    # Test train command (should fail gracefully with no data)
+    # Test train command (should fail gracefully with insufficient data)
     success, output, error = run_cli_command(["train"])
     if (
         "no data" in error.lower()
         or "insufficient" in error.lower()
         or "too few" in error.lower()
+        or "at least 2 different labels" in error.lower()
         or success
     ):
-        print("✓ train command handles no data appropriately")
+        print("✓ train command handles insufficient data appropriately")
     else:
         print(f"! train command failed: {error}")
         assert False, f"train command failed unexpectedly: {error}"

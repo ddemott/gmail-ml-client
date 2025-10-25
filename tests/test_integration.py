@@ -5,7 +5,6 @@ These tests verify that multiple components work together correctly.
 
 import os
 import shutil
-import sqlite3
 import sys
 import tempfile
 from unittest.mock import patch
@@ -37,8 +36,25 @@ class TestDataStorePersistence:
         self.temp_dir = tempfile.mkdtemp()
         self.db_path = os.path.join(self.temp_dir, "test.db")
 
+        # Force database engine reset by clearing global state
+        import src.gmail_ml_client.data_store as ds
+
+        ds._engine = None
+        ds._Session = None
+        ds._current_db_path = None
+
         cfg.DB_PATH = self.db_path
         data_store.init_db()
+
+        # Clear any existing data to ensure test isolation
+        session = data_store.get_session()()
+        try:
+            session.query(data_store.Message).delete()
+            session.commit()
+        except Exception:
+            session.rollback()
+        finally:
+            session.close()
 
     def teardown_method(self):
         """Cleanup after each test."""
@@ -109,8 +125,25 @@ class TestEmailProcessingWorkflow:
         self.temp_dir = tempfile.mkdtemp()
         self.db_path = os.path.join(self.temp_dir, "test.db")
 
+        # Force database engine reset by clearing global state
+        import src.gmail_ml_client.data_store as ds
+
+        ds._engine = None
+        ds._Session = None
+        ds._current_db_path = None
+
         cfg.DB_PATH = self.db_path
         data_store.init_db()
+
+        # Clear any existing data to ensure test isolation
+        session = data_store.get_session()()
+        try:
+            session.query(data_store.Message).delete()
+            session.commit()
+        except Exception:
+            session.rollback()
+        finally:
+            session.close()
 
     def teardown_method(self):
         """Cleanup after each test."""
@@ -146,17 +179,15 @@ class TestEmailProcessingWorkflow:
         # Store in database
         data_store.upsert_message(mock_message["id"], mock_message["snippet"], extracted_text)
 
-        # Verify storage
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM messages WHERE id = ?", (mock_message["id"],))
-        result = cursor.fetchone()
-
-        assert result is not None
-        assert result[0] == mock_message["id"]
-        assert "important work update" in result[2]
-
-        conn.close()
+        # Verify storage using ORM
+        session = data_store.get_session()()
+        try:
+            message = session.query(data_store.Message).filter_by(id=mock_message["id"]).first()
+            assert message is not None
+            assert message.id == mock_message["id"]
+            assert "important work update" in message.text
+        finally:
+            session.close()
 
     @patch("src.gmail_ml_client.sorter.predict")
     def test_prediction_workflow(self, mock_predict):

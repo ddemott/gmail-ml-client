@@ -462,11 +462,15 @@ class TestCLIRealExecution:
 
     def test_cli_help_command(self):
         """Test that CLI help works."""
+        env = os.environ.copy()
+        env["PYTHONPATH"] = "d:\\development\\Workspaces\\PythonWorkspace\\GmailClient"
+
         result = subprocess.run(
             [self.python_exe, "scripts/cli.py", "--help"],
             cwd="d:\\development\\Workspaces\\PythonWorkspace\\GmailClient",
             capture_output=True,
             text=True,
+            env=env,
         )
 
         assert result.returncode == 0
@@ -479,11 +483,15 @@ class TestCLIRealExecution:
 
     def test_cli_command_existence(self):
         """Test that all expected commands are available."""
+        env = os.environ.copy()
+        env["PYTHONPATH"] = "d:\\development\\Workspaces\\PythonWorkspace\\GmailClient"
+
         result = subprocess.run(
             [self.python_exe, "scripts/cli.py", "--help"],
             cwd="d:\\development\\Workspaces\\PythonWorkspace\\GmailClient",
             capture_output=True,
             text=True,
+            env=env,
         )
 
         assert result.returncode == 0
@@ -495,6 +503,9 @@ class TestCLIRealExecution:
 
     def test_individual_command_help(self):
         """Test help for individual commands."""
+        env = os.environ.copy()
+        env["PYTHONPATH"] = "d:\\development\\Workspaces\\PythonWorkspace\\GmailClient"
+
         commands_to_test = ["init", "sync", "train", "predict", "apply"]
 
         for cmd in commands_to_test:
@@ -503,6 +514,7 @@ class TestCLIRealExecution:
                 cwd="d:\\development\\Workspaces\\PythonWorkspace\\GmailClient",
                 capture_output=True,
                 text=True,
+                env=env,
             )
 
             assert result.returncode == 0, f"Help for {cmd} command failed"

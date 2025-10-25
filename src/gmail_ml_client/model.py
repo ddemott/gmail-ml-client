@@ -173,12 +173,16 @@ def train(
         # Generate validation report
         if X_val is not None:
             val_preds = model.predict(X_val, verbose=0).argmax(axis=1)
-            report = classification_report(y_val, val_preds, target_names=le.classes_)
+            report = classification_report(
+                y_val, val_preds, target_names=le.classes_, zero_division=0
+            )
             final_accuracy = history.history["val_accuracy"][-1]
         else:
             # For small datasets, use training accuracy
             train_preds = model.predict(X_train, verbose=0).argmax(axis=1)
-            report = classification_report(y_train, train_preds, target_names=le.classes_)
+            report = classification_report(
+                y_train, train_preds, target_names=le.classes_, zero_division=0
+            )
             final_accuracy = history.history["accuracy"][-1]
 
         logger.info(f"Training completed. Final accuracy: {final_accuracy:.3f}")
